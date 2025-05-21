@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile - Major Maker</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+            background-color: #f4f4f4;
+        }
+        .profile-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .profile-info {
+            margin-bottom: 15px;
+        }
+        .profile-info strong {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        #error-message {
+            color: red;
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .back-link {
+            margin-top: 20px;
+        }
+        .back-link a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <h2>Your Profile</h2>
+        <div id="profile-data">
+            <p class="profile-info"><strong>Name:</strong> <span id="user-name">Loading...</span></p>
+            <p class="profile-info"><strong>ProHandler:</strong> <span id="user-prohandler">Loading...</span></p>
+        </div>
+        <div id="error-message" style="display: none;"></div>
+        <button id="edit-profile-button">Edit Profile (Coming Soon)</button>
+        <div class="back-link">
+            <a href="index.html">Back to Home</a>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        // Firebase configuration (replace with your actual config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDudaFY9ZkQthsOPkn5MKCWUV4GdJ__YEI",
+            authDomain: "major-maker-580e8.firebaseapp.com",
+            databaseURL: "https://major-maker-580e8-default-rtdb.firebaseio.com",
+            projectId: "major-maker-580e8",
+            storageBucket: "major-maker-580e8.firebasestorage.app",
+            messagingSenderId: "342221542780",
+            appId: "1:342221542780:web:057da75b81136edd4a40f9",
+            measurementId: "G-LGWRJMMMSS"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // User is logged in, fetch their profile data
+                    fetchUserProfile(user.uid);
+                } else {
+                    // User is not logged in, redirect to login page
+                    window.location.href = 'index.html'; // Or your login page
+                }
+            });
+        });
+
+        function fetchUserProfile(uid) {
+            db.collection('User').doc(uid).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        document.getElementById('user-name').textContent = userData.Name || 'N/A';
+                        document.getElementById('user-prohandler').textContent = userData.ProHandler || 'N/A';
+                    } else {
+                        document.getElementById('error-message').textContent = 'Profile data not found.';
+                        document.getElementById('error-message').style.display = 'block';
+                        document.getElementById('profile-data').style.display = 'none';
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching profile data:', error);
+                    document.getElementById('error-message').textContent = 'Failed to load profile data.';
+                    document.getElementById('error-message').style.display = 'block';
+                    document.getElementById('profile-data').style.display = 'none';
+                });
+        }
+
+        document.getElementById('edit-profile-button').addEventListener('click', () => {
+            alert('Edit profile functionality coming soon!');
+        });
+    </script>
+</body>
+</html>
