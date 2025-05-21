@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Major Maker</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .button-container {
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #5cb85c;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Major Maker</h1>
+    <div class="button-container">
+        <button id="findShowsBtn">Find shows</button>
+        <button id="editAccountBtn">Edit account</button>
+    </div>
+
+    <script>
+        // In the future, these buttons will have functionality
+        document.getElementById("findShowsBtn").addEventListener("click", function() {
+            alert("Find shows functionality coming soon!");
+        });
+
+        document.getElementById("editAccountBtn").addEventListener("click", function() {
+            alert("Edit account functionality coming soon!");
+        });
+    </script>
+</body>
+</html>
