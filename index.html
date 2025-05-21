@@ -196,28 +196,20 @@ googleLoginButton.addEventListener('click', () => {
 function signInWithGoogle() {
   firebase.auth().signInWithPopup(googleAuthProvider)
     .then((result) => {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      // const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
-      // const token = credential.accessToken;
-      // The signed-in user info.
-      const user = result.user;
-      console.log('Google Sign-in successful:', user);
-      // Update UI to show logged-in state
-      signupForm.style.display = 'none';
-      loginForm.style.display = 'none';
-      mainButtons.style.display = 'flex'; // Assuming you want to use flex for these buttons
-      // Optionally, display a welcome message or redirect the user
+      // ... (success handling code remains the same) ...
     }).catch((error) => {
       // Handle Errors here.
       const errorCode = error.code;
       const errorMessage = error.message;
       // The email of the user's account used.
       const email = error.email;
-      // The firebase.auth.AuthCredential type that was used.
-      const credential = firebase.auth.AuthCredential.fromError(error);
-      console.error('Google Sign-in error:', errorCode, errorMessage, email, credential);
+      // **Remove or comment out the line causing the error:**
+      // const credential = firebase.auth.AuthCredential.fromError(error);
+      console.error('Google Sign-in error:', errorCode, errorMessage, email);
       signupErrorMessage.textContent = errorMessage;
       loginErrorMessage.textContent = errorMessage;
+    });
+}
     });
 }
 
