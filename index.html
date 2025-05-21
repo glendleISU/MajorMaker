@@ -17,33 +17,143 @@
             color: #333;
             margin-bottom: 30px;
         }
-        .button-container {
-            display: flex;
-            gap: 20px;
+        .auth-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 350px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
         }
         button {
-            padding: 15px 30px;
+            padding: 10px 20px;
             font-size: 16px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            background-color: #5cb85c;
+            background-color: #007bff;
             color: white;
             transition: background-color 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
         }
         button:hover {
-            background-color: #4cae4c;
+            background-color: #0056b3;
+        }
+        .social-login {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .social-login button {
+            background-color: #dd4b39; /* Google color */
+        }
+        .social-login button.facebook {
+            background-color: #3b5998; /* Facebook color */
+        }
+        .social-login button:hover {
+            opacity: 0.9;
+        }
+        .switch-auth {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .switch-auth a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .switch-auth a:hover {
+            text-decoration: underline;
+        }
+        #error-message {
+            color: red;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <h1>Major Maker</h1>
-    <div class="button-container">
+
+    <div class="auth-container" id="signup-form">
+        <h2>Sign Up</h2>
+        <div class="form-group">
+            <label for="signup-email">Email:</label>
+            <input type="email" id="signup-email" name="signup-email" required>
+        </div>
+        <div class="form-group">
+            <label for="signup-password">Password:</label>
+            <input type="password" id="signup-password" name="signup-password" required>
+        </div>
+        <button type="submit" id="signup-button">Sign Up</button>
+        <div class="social-login">
+            <button type="button" id="google-signup">Sign Up with Google</button>
+            <button type="button" id="facebook-signup" class="facebook">Sign Up with Facebook</button>
+        </div>
+        <div class="switch-auth">
+            Already have an account? <a href="#" id="goto-login">Log In</a>
+        </div>
+        <div id="signup-error-message" class="error-message"></div>
+    </div>
+
+    <div class="auth-container" id="login-form" style="display: none;">
+        <h2>Log In</h2>
+        <div class="form-group">
+            <label for="login-email">Email:</label>
+            <input type="email" id="login-email" name="login-email" required>
+        </div>
+        <div class="form-group">
+            <label for="login-password">Password:</label>
+            <input type="password" id="login-password" name="login-password" required>
+        </div>
+        <button type="submit" id="login-button">Log In</button>
+        <div class="social-login">
+            <button type="button" id="google-login">Log In with Google</button>
+            <button type="button" id="facebook-login" class="facebook">Log In with Facebook</button>
+        </div>
+        <div class="switch-auth">
+            Don't have an account? <a href="#" id="goto-signup">Sign Up</a>
+        </div>
+        <div id="login-error-message" class="error-message"></div>
+    </div>
+
+    <div class="button-container" id="main-buttons">
         <button id="findShowsBtn">Find shows</button>
         <button id="editAccountBtn">Edit account</button>
     </div>
 
     <script>
+        document.getElementById("goto-login").addEventListener("click", function(event) {
+            event.preventDefault();
+            document.getElementById("signup-form").style.display = "none";
+            document.getElementById("login-form").style.display = "block";
+        });
+
+        document.getElementById("goto-signup").addEventListener("click", function(event) {
+            event.preventDefault();
+            document.getElementById("login-form").style.display = "none";
+            document.getElementById("signup-form").style.display = "block";
+        });
+
+        // Initially hide the main buttons
+        document.getElementById("main-buttons").style.display = "none";
+
         // In the future, these buttons will have functionality
         document.getElementById("findShowsBtn").addEventListener("click", function() {
             alert("Find shows functionality coming soon!");
