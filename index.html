@@ -210,8 +210,6 @@ function signInWithGoogle() {
       loginErrorMessage.textContent = errorMessage;
     });
 }
-    });
-}
 
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
