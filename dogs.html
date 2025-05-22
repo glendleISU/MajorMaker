@@ -152,7 +152,7 @@
             <a href="profile.html" style="text-decoration: none;"><button>Return to Profile</button></a>
         </div>
         <ul id="dog-list">
-            <li>Loading dogs...</li>
+            <li>Loading dogs...(button)</li>
         </ul>
         <div id="dog-details">
             <h3>Dog Details</h3>
@@ -251,7 +251,7 @@
         });
 
 function fetchUserDogs(ownerId) {
-        dogListElement.innerHTML = '<li>Loading dogs...</li>';
+        dogListElement.innerHTML = '<li>Loading dogs...(fetchuser)</li>';
         errorMessageElement.style.display = 'none';
     
         db.collection('Dog')
