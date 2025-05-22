@@ -269,7 +269,7 @@ function fetchUserDogs(ownerId) {
                         const dogId = doc.id;
                         dogItems += `
                             <li>
-                                <input type="radio" name="selectedDog" value="${dogId}" onchange="displayDogListInDetails('${dogId}')">
+                                <input type="radio" name="selectedDog" value="${dogId}" onchange="fetchAndDisplayDogDetails('${dogId}')">
                                 ${dogData.DogCallName || 'N/A'}
                             </li>
                         `;
