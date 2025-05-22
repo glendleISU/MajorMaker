@@ -283,13 +283,30 @@
             const breed = breedInput.value.trim();
             const sex = sexInput.value;
             const retired = retiredInput.checked;
-            const birthdate = birthdateInput.value;
+            const birthdateInputValue = birthdateInput.value; // Get the date string
 
             if (!callname) {
                 displayStatusMessage('Dog Call Name is required.', 'error');
                 return;
             }
 
+    let birthdateFirestore = null;
+        if (birthdateInputValue) {
+            // Create a Date object in the user's local timezone
+            const localDate = new Date(birthdateInputValue);
+            // Convert it to UTC by getting the UTC components
+            const utcDate = new Date(Date.UTC(
+                localDate.getFullYear(),
+                localDate.getMonth(),
+                localDate.getDate(),
+                localDate.getHours(),
+                localDate.getMinutes(),
+                localDate.getSeconds(),
+                localDate.getMilliseconds()
+            ));
+            // Store this UTC Date object. Firestore will handle it as a Timestamp.
+            birthdateFirestore = utcDate;
+            
             const dogDataToUpdate = {
                 DogCallName: callname,
                 DogRegName: regname,
@@ -297,7 +314,7 @@
                 Breed: breed,
                 Sex: sex,
                 Retired: retired,
-                Birthdate: birthdate ? new Date(birthdate) : null, // Convert to Firebase Timestamp or null
+                Birthdate: birthdateFirestore,
             };
 
             try {
@@ -314,6 +331,30 @@
             }
         });
 
+        function populateForm(dogData) {
+        callnameInput.value = dogData.DogCallName || '';
+        regnameInput.value = dogData.DogRegName || '';
+        akcRegNumInput.value = dogData.AKCRegNum || '';
+        breedInput.value = dogData.Breed || '';
+        sexInput.value = dogData.Sex || '';
+        retiredInput.checked = dogData.Retired || false;
+        birthdateInput.value = dogData.Birthdate ? formatDateForInput(dogData.Birthdate) : '';
+    }
+
+    // Helper function to format Firebase Timestamp for input type="date" (for display)
+    function formatDateForInput(date) {
+        if (date && date.toDate) { // Check if it's a Firebase Timestamp
+            const jsDate = date.toDate(); // Convert to JavaScript Date object
+            const year = jsDate.getFullYear();
+            const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+            const day = String(jsDate.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        } else if (typeof date === 'string') {
+            return date; // If it's already a string in YYYY-MM-DD format
+        }
+        return '';
+    }
+        
         window.addEventListener('load', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const dogIdFromUrl = urlParams.get('id');
