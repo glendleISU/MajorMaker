@@ -256,7 +256,6 @@ function fetchUserDogs(ownerId) {
     
         db.collection('Dog')
             .where('OwnerID', '==', ownerId)
-            .orderBy('DogCallName') // Optional: Order by call name
             .get()
             .then((querySnapshot) => {
                 if (querySnapshot.empty) {
