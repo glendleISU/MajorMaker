@@ -13,13 +13,14 @@
             padding-top: 50px;
             background-color: #f4f4f4;
         }
-        .profile-container {
+        .profile-container, .new-profile-container {
             background-color: white;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 400px;
             text-align: center;
+            margin-bottom: 20px;
         }
         h2 {
             color: #333;
@@ -32,7 +33,7 @@
             font-weight: bold;
             margin-right: 10px;
         }
-        #error-message {
+        #error-message, #new-profile-error-message {
             color: red;
             margin-top: 10px;
         }
@@ -46,6 +47,7 @@
             color: white;
             transition: background-color 0.3s ease;
             margin-top: 20px;
+            width: 100%;
         }
         button:hover {
             background-color: #0056b3;
@@ -60,14 +62,36 @@
         .back-link a:hover {
             text-decoration: underline;
         }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
-    <div class="profile-container">
+    <div class="profile-container" id="profile-display" style="display: none;">
         <h2>Your Profile</h2>
         <div id="profile-data">
-            <p class="profile-info"><strong>Name:</strong> <span id="user-name">Loading...</span></p>
-            <p class="profile-info"><strong>ProHandler:</strong> <span id="user-prohandler">Loading...</span></p>
+            <p class="profile-info"><strong>Name:</strong> <span id="user-name"></span></p>
+            <p class="profile-info"><strong>ProHandler:</strong> <span id="user-prohandler"></span></p>
+            <p class="profile-info"><strong>Email:</strong> <span id="user-email"></span></p>
         </div>
         <div id="error-message" style="display: none;"></div>
         <button id="edit-profile-button">Edit Profile (Coming Soon)</button>
@@ -76,11 +100,31 @@
         </div>
     </div>
 
+    <div class="new-profile-container" id="new-profile-form" style="display: none;">
+        <h2>Set Up Your Profile</h2>
+        <form id="create-profile-form">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="prohandler">ProHandler:</label>
+                <input type="checkbox" id="prohandler" name="prohandler"> Yes
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" readonly>
+            </div>
+            <button type="submit">Save Profile</button>
+            <div id="new-profile-error-message" class="error-message" style="display: none;"></div>
+        </form>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script>
-        // Firebase configuration (replace with your actual config)
+        // Firebase configuration (replace with your actual config if different)
         const firebaseConfig = {
             apiKey: "AIzaSyDudaFY9ZkQthsOPkn5MKCWUV4GdJ__YEI",
             authDomain: "major-maker-580e8.firebaseapp.com",
@@ -97,37 +141,79 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        const profileDisplay = document.getElementById('profile-display');
+        const newProfileForm = document.getElementById('new-profile-form');
+        const userNameSpan = document.getElementById('user-name');
+        const userProHandlerSpan = document.getElementById('user-prohandler');
+        const userEmailSpan = document.getElementById('user-email');
+        const errorMessageDiv = document.getElementById('error-message');
+        const createProfileForm = document.getElementById('create-profile-form');
+        const newProfileErrorMessageDiv = document.getElementById('new-profile-error-message');
+
         document.addEventListener('DOMContentLoaded', () => {
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    // User is logged in, fetch their profile data
-                    fetchUserProfile(user.uid);
+                    // User is logged in, check for profile data
+                    fetchUserProfile(user.uid, user.email);
                 } else {
                     // User is not logged in, redirect to login page
                     window.location.href = 'index.html'; // Or your login page
                 }
             });
+
+            createProfileForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                saveNewUserProfile();
+            });
         });
 
-        function fetchUserProfile(uid) {
+        function fetchUserProfile(uid, userEmail) {
             db.collection('User').doc(uid).get()
                 .then((doc) => {
                     if (doc.exists) {
                         const userData = doc.data();
-                        document.getElementById('user-name').textContent = userData.Name || 'N/A';
-                        document.getElementById('user-prohandler').textContent = userData.ProHandler || 'N/A';
+                        userNameSpan.textContent = userData.Name || 'N/A';
+                        userProHandlerSpan.textContent = userData.ProHandler ? 'Yes' : 'No';
+                        userEmailSpan.textContent = userData.email || userEmail || 'N/A';
+                        profileDisplay.style.display = 'block';
+                        newProfileForm.style.display = 'none';
                     } else {
-                        document.getElementById('error-message').textContent = 'Profile data not found.';
-                        document.getElementById('error-message').style.display = 'block';
-                        document.getElementById('profile-data').style.display = 'none';
+                        // No profile data found, show the new profile form
+                        document.getElementById('email').value = userEmail || ''; // Pre-fill email if available
+                        profileDisplay.style.display = 'none';
+                        newProfileForm.style.display = 'block';
                     }
                 })
                 .catch((error) => {
                     console.error('Error fetching profile data:', error);
-                    document.getElementById('error-message').textContent = 'Failed to load profile data.';
-                    document.getElementById('error-message').style.display = 'block';
-                    document.getElementById('profile-data').style.display = 'none';
+                    errorMessageDiv.textContent = 'Failed to load profile data.';
+                    errorMessageDiv.style.display = 'block';
+                    profileDisplay.style.display = 'none';
+                    newProfileForm.style.display = 'none';
                 });
+        }
+
+        function saveNewUserProfile() {
+            const name = document.getElementById('name').value;
+            const prohandler = document.getElementById('prohandler').checked;
+            const email = document.getElementById('email').value;
+            const uid = auth.currentUser.uid;
+
+            db.collection('User').doc(uid).set({
+                Name: name,
+                ProHandler: prohandler,
+                email: email
+            })
+            .then(() => {
+                console.log('New user profile created successfully!');
+                // Re-fetch the profile data to update the display
+                fetchUserProfile(uid, email);
+            })
+            .catch((error) => {
+                console.error('Error creating new user profile:', error);
+                newProfileErrorMessageDiv.textContent = 'Failed to save profile.';
+                newProfileErrorMessageDiv.style.display = 'block';
+            });
         }
 
         document.getElementById('edit-profile-button').addEventListener('click', () => {
