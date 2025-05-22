@@ -8,9 +8,131 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
 
-    <style>
-        /* ... (your existing styles) ... */
+<style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%;
+            text-align: left;
+        }
+
+        h1 {
+            color: #0056b3;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group select,
+        .form-group input[type="date"],
+        .form-group input[type="checkbox"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        .checkbox-group label {
+            display: inline-block;
+            margin-right: 15px;
+            font-weight: normal;
+        }
+
+        #status-message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        #status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+
+        #status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .button-container button[type="submit"] {
+            flex-grow: 1;
+            padding: 12px 20px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-width: 150px;
+        }
+
+        .button-container button[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        .button-container a {
+            flex-grow: 1;
+            padding: 12px 20px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-width: 150px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .button-container a:hover {
+            background-color: #0056b3;
+        }
     </style>
+
 </head>
 <body>
 
