@@ -370,18 +370,34 @@
             const urlParams = new URLSearchParams(window.location.search);
             const dogIdFromUrl = urlParams.get('id');
 
-            populateBreedDropdown(); // Load the breeds when the page loads
+            async function populateBreedDropdown() {
+    try {
+        const snapshot = await breedsCollection.get();
+        breedSelect.innerHTML = '<option value="">Select a breed</option>'; // Clear loading and add default
+        const breeds = new Set(); // Use a Set to store unique breed values
 
-            if (dogIdFromUrl) {
-                editingDogId = dogIdFromUrl;
-                pageTitle.textContent = 'Edit Dog';
-                submitButton.textContent = 'Update Dog';
-                fetchDogForEditing(editingDogId);
-            } else {
-                pageTitle.textContent = 'Add New Dog';
-                submitButton.textContent = 'Save Dog';
-                // If no ID, the form is for adding a new dog
+        snapshot.forEach(doc => {
+            const breedData = doc.data();
+            if (breedData.Breed) {
+                breeds.add(breedData.Breed);
             }
+        });
+
+        // Convert the Set to an Array and sort it alphabetically
+        const sortedBreeds = Array.from(breeds).sort();
+
+        sortedBreeds.forEach(breed => {
+            const option = document.createElement('option');
+            option.value = breed;
+            option.textContent = breed;
+            breedSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error fetching breeds:", error);
+        breedSelect.innerHTML = '<option value="">Error loading breeds</option>';
+        displayStatusMessage(`Error loading breeds: ${error.message}`, 'error');
+    }
+}
         });
     </script>
 
