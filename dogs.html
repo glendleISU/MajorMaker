@@ -229,6 +229,7 @@
         const db = firebase.firestore();
 
         const dogListElement = document.getElementById('dog-list');
+        const dogDetailElement = document.getElementById('details-content');
         const errorMessageElement = document.getElementById('error-message');
         const addDogButton = document.getElementById('add-dog-button');
 
@@ -283,7 +284,7 @@ function fetchUserDogs(ownerId) {
     }
 
 function displayDogListInDetails(dogId) {
-     dogListElement.innerHTML = '<li>Loading data...</li>';
+     dogDetailElement.innerHTML = '<li>Loading data...</li>';
         errorMessageElement.style.display = 'none';
 
         db.collection('Dog')
@@ -291,12 +292,12 @@ function displayDogListInDetails(dogId) {
             .get()
             .then((querySnapshot) => {
                 if (querySnapshot.empty) {
-                    dogListElement.innerHTML = '<li>No dogs found.</li>';
+                    dogDetailElement.innerHTML = '<li>No dogs found.</li>';
                 } else {
                     let dogItems = '';
                     querySnapshot.forEach((doc) => {
                         const dogData = doc.data();
-                        const dogId = doc.id;
+                        <!-- const dogId = doc.id; -->
                         dogItems += `
                                 <li>
                                     <div class="dog-info">
@@ -311,14 +312,14 @@ function displayDogListInDetails(dogId) {
                                 </li>
                         `;
                     });
-                    dogListElement.innerHTML = dogItems;
+                    dogDetailElement.innerHTML = dogItems;
                 }
             })
             .catch((error) => {
                 console.error('Error fetching dogs:', error);
                 errorMessageElement.textContent = 'Failed to load.';
                 errorMessageElement.style.display = 'block';
-                dogListElement.innerHTML = '';
+                dogDetailElement.innerHTML = '';
             });
     }
         
