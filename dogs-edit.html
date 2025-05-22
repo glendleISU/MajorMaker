@@ -85,6 +85,23 @@
             width: auto; /* Adjust width to content */
             margin-left: 0; /* Remove any default left margin */
         }
+
+        .form-group#champion-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    
+        .form-group#champion-group label {
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: bold;
+        }
+    
+        .form-group#champion-group input[type="checkbox"] {
+            width: auto;
+            margin-left: 0;
+        }
     
         #status-message {
             margin-top: 20px;
@@ -190,6 +207,11 @@
                 </select>
             </div>
 
+            <div class="form-group" id="champion-group">
+                <label for="champion">Champion:</label>
+                <input type="checkbox" id="champion" name="Champion"> Yes
+            </div>
+            
             <div class="form-group" id="retired-group">
                 <label for="retired">Retired:</label>
                 <input type="checkbox" id="retired" name="Retired"> Yes
@@ -242,6 +264,7 @@
         const regnameInput = document.getElementById('dog-reg-name');
         const akcRegNumInput = document.getElementById('akc-reg-num');
         const sexInput = document.getElementById('sex');
+        const championInput = document.getElementById('champion');
         const retiredInput = document.getElementById('retired');
         const birthdateInput = document.getElementById('birthdate');
 
@@ -284,6 +307,7 @@
             akcRegNumInput.value = dogData.AKCRegNum || '';
             breedSelect.value = dogData.Breed || ''; // Set the selected breed
             sexInput.value = dogData.Sex || '';
+            championInput.checked = dogData.Champion || false;
             retiredInput.checked = dogData.Retired || false;
             birthdateInput.value = dogData.Birthdate ? formatDateForInput(dogData.Birthdate) : '';
         }
@@ -328,6 +352,7 @@
             const akcRegNum = akcRegNumInput.value.trim();
             const breed = breedSelect.value; // Get the selected breed from the dropdown
             const sex = sexInput.value;
+            const champion = championInput.checked;
             const retired = retiredInput.checked;
             const birthdateInputValue = birthdateInput.value;
 
@@ -349,6 +374,7 @@
                 AKCRegNum: akcRegNum,
                 Breed: breed,
                 Sex: sex,
+                Champion: champion,
                 Retired: retired,
                 Birthdate: birthdateFirestore,
             };
