@@ -1,611 +1,307 @@
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Your Dogs - Major Maker</title>
-
-    <style>
-
-        body {
-
-            font-family: sans-serif;
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            padding-top: 50px;
-
-            background-color: #f4f4f4;
-
-        }
-
-        .container {
-
-            background-color: white;
-
-            padding: 30px;
-
-            border-radius: 8px;
-
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-
-            width: 80%;
-
-            max-width: 900px;
-
-        }
-
-        h2 {
-
-            color: #333;
-
-            margin-bottom: 20px;
-
-            text-align: center;
-
-        }
-
-        .button-container {
-
-            display: flex;
-
-            gap: 15px;
-
-            margin-bottom: 20px;
-
-            justify-content: center;
-
-        }
-
-        button {
-
-            padding: 10px 20px;
-
-            font-size: 16px;
-
-            border: none;
-
-            border-radius: 5px;
-
-            cursor: pointer;
-
-            background-color: #007bff;
-
-            color: white;
-
-            transition: background-color 0.3s ease;
-
-        }
-
-        button:hover {
-
-            background-color: #0056b3;
-
-        }
-
-        #dog-list {
-
-            list-style: none;
-
-            padding: 0;
-
-            border: 1px solid #ddd;
-
-            border-radius: 4px;
-
-            max-height: 200px;
-
-            overflow-y: auto;
-
-            margin-bottom: 15px;
-
-        }
-
-        #dog-list li {
-
-            padding: 10px;
-
-            border-bottom: 1px solid #eee;
-
-            cursor: pointer;
-
-        }
-
-        #dog-list li:last-child {
-
-            border-bottom: none;
-
-        }
-
-        #dog-list li.selected {
-
-            background-color: #f0f0f0;
-
-        }
-
-        #dog-details {
-
-            margin-top: 20px;
-
-            padding: 15px;
-
-            border: 1px solid #ccc;
-
-            border-radius: 4px;
-
-            background-color: #f9f9f9;
-
-        }
-
-        .detail-row {
-
-            margin-bottom: 10px;
-
-        }
-
-        .detail-row label {
-
-            font-weight: bold;
-
-            margin-right: 10px;
-
-        }
-
-        .dog-actions {
-
-            margin-top: 20px;
-
-            text-align: center;
-
-        }
-
-        .dog-actions button {
-
-            margin: 0 10px;
-
-            background-color: #5cb85c;
-
-        }
-
-        .dog-actions button:hover {
-
-            background-color: #4cae4c;
-
-        }
-
-        .error-message {
-
-            color: red;
-
-            text-align: center;
-
-            margin-top: 20px;
-
-        }
-
-        .back-link {
-
-            margin-top: 20px;
-
-            text-align: center;
-
-        }
-
-        .back-link a {
-
-            text-decoration: none;
-
-            color: #007bff;
-
-        }
-
-        .back-link a:hover {
-
-            text-decoration: underline;
-
-        }
-
-        #edit-form {
-
-            display: none;
-
-            margin-top: 20px;
-
-            padding: 15px;
-
-            border: 1px solid #ccc;
-
-            border-radius: 4px;
-
-            background-color: #f9f9f9;
-
-        }
-
-        #edit-form h3 {
-
-            margin-top: 0;
-
-        }
-
-        #edit-form .form-group {
-
-            margin-bottom: 10px;
-
-            text-align: left;
-
-        }
-
-        #edit-form .form-group label {
-
-            display: block;
-
-            font-weight: bold;
-
-            margin-bottom: 5px;
-
-        }
-
-        #edit-form .form-actions {
-
-            text-align: center;
-
-            margin-top: 15px;
-
-        }
-
-        #edit-form .form-actions button {
-
-            margin: 0 10px;
-
-        }
-
-        input[type="text"], input[type="date"], select, input[type="checkbox"] {
-
-            padding: 8px;
-
-            border: 1px solid #ddd;
-
-            border-radius: 4px;
-
-            box-sizing: border-box;
-
-            width: 100%;
-
-            margin-top: 5px;
-
-        }
-
-    </style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Dogs - Major Maker</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 900px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .button-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #dog-list {
+            list-style: none;
+            padding: 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        #dog-list li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        #dog-list li:last-child {
+            border-bottom: none;
+        }
+        #dog-list li.selected {
+            background-color: #f0f0f0;
+        }
+        #dog-details {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .detail-row {
+            margin-bottom: 10px;
+        }
+        .detail-row label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .dog-actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .dog-actions button {
+            margin: 0 10px;
+            background-color: #5cb85c;
+        }
+        .dog-actions button:hover {
+            background-color: #4cae4c;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .back-link a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        #edit-form {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        #edit-form h3 {
+            margin-top: 0;
+        }
+        #edit-form .form-group {
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        #edit-form .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        #edit-form .form-actions {
+            text-align: center;
+            margin-top: 15px;
+        }
+        #edit-form .form-actions button {
+            margin: 0 10px;
+        }
+        input[type="text"], input[type="date"], select, input[type="checkbox"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            width: 100%;
+            margin-top: 5px;
+        }
+    </style>
 </head>
-
 <body>
-
-    <div class="container">
-
-        <h2>Your Dogs</h2>
-
-        <div class="button-container">
-
-            <button id="add-dog-button">Add New Dog</button>
-
-            <a href="profile.html" style="text-decoration: none;"><button>Return to Profile</button></a>
-
-        </div>
-
-        <ul id="dog-list">
-
-            <li>Loading dogs...</li>
-
-        </ul>
-
-        <div id="dog-details">
-
-            <h3>Dog Details</h3>
-
-            <div id="details-content">
-
-                <p>Select a dog from the list to view details.</p>
-
-            </div>
-
-            <div class="dog-actions">
-
-                <button id="edit-dog-button" style="display: none;">Edit Dog</button>
-
-            </div>
-
-        </div>
-
-
-
-        <div id="edit-form" style="display: none;">
-
-            <h3>Edit Dog</h3>
-
-            <form id="dog-edit-form">
-
-                <div class="form-group">
-
-                    <label for="edit-dogcallname">Call Name:</label>
-
-                    <input type="text" id="edit-dogcallname" name="edit-dogcallname" required>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="edit-dogregname">Registered Name:</label>
-
-                    <input type="text" id="edit-dogregname" name="edit-dogregname">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="edit-birthdate">Birthdate:</label>
-
-                    <input type="date" id="edit-birthdate" name="edit-birthdate">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="edit-akcregnum">AKC Reg. #:</label>
-
-                    <input type="text" id="edit-akcregnum" name="edit-akcregnum">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="edit-retired">Retired:</label>
-
-                    <input type="checkbox" id="edit-retired" name="edit-retired"> Yes
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="edit-sex">Sex:</label>
-
-                    <select id="edit-sex" name="edit-sex">
-
-                        <option value="">Select</option>
-
-                        <option value="Male">Male</option>
-
-                        <option value="Female">Female</option>
-
-                    </select>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="edit-title">Titles (comma-separated):</label>
-
-                    <input type="text" id="edit-title" name="edit-title">
-
-                </div>
-
-                <div class="form-actions">
-
-                    <button type="submit">Save Changes</button>
-
-                    <button type="button" id="cancel-edit-button">Cancel</button>
-
-                </div>
-
-                <div id="edit-error-message" class="error-message" style="display: none;"></div>
-
-            </form>
-
-        </div>
-
-
-
-        <div id="error-message" class="error-message" style="display: none;"></div>
-
-    </div>
-
-
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-    <script>
-
-        // Firebase configuration (replace with your actual config if different)
-
-        const firebaseConfig = {
-
-            apiKey: "AIzaSyDudaFY9ZkQthsOPkn5MKCWUV4GdJ__YEI",
-
-            authDomain: "major-maker-580e8.firebaseapp.com",
-
-            databaseURL: "https://major-maker-580e8-default-rtdb.firebaseio.com",
-
-            projectId: "major-maker-580e8",
-
-            storageBucket: "major-maker-580e8.firebasestorage.app",
-
-            messagingSenderId: "342221542780",
-
-            appId: "1:342221542780:web:057da75b81136edd4a40f9",
-
-            measurementId: "G-LGWRJMMMSS"
-
-        };
-
-
-
-        // Initialize Firebase
-
-        const app = firebase.initializeApp(firebaseConfig);
-
-        const auth = firebase.auth();
-
-        const db = firebase.firestore();
-
-
-
-        const dogListElement = document.getElementById('dog-list');
-
-        const errorMessageElement = document.getElementById('error-message');
-
-        const addDogButton = document.getElementById('add-dog-button');
-
-
-
-        document.addEventListener('DOMContentLoaded', () => {
-
-            auth.onAuthStateChanged(user => {
-
-                if (user) {
-
-                    // User is logged in, fetch their dogs
-
-                    fetchUserDogs(user.uid);
-
-                } else {
-
-                    // User is not logged in, redirect to login
-
-                    window.location.href = 'index.html'; // Or your login page
-
-                }
-
-            });
-
-
-
-            addDogButton.addEventListener('click', () => {
-
-                // Redirect to a page to add a new dog
-
-                window.location.href = 'add_dog.html'; // You'll need to create this page
-
-            });
-
-        });
-
-
-
-        function fetchUserDogs(ownerId) {
-
-            dogListElement.innerHTML = '<li>Loading dogs...</li>';
-
-            errorMessageElement.style.display = 'none';
-
-
-
-            db.collection('Dog')
-
-                .where('OwnerID', '==', ownerId)
-
-                .get()
-
-                .then((querySnapshot) => {
-
-                    if (querySnapshot.empty) {
-
-                        dogListElement.innerHTML = '<li>No dogs found.</li>';
-
-                    } else {
-
-                        let dogItems = '';
-
-                        querySnapshot.forEach((doc) => {
-
-                            const dogData = doc.data();
-
-                            const dogId = doc.id;
-
-                            const titles = dogData.Title ? dogData.Title.join(', ') : 'None';
-
-                            const birthdate = dogData.Birthdate ? new Date(dogData.Birthdate.seconds * 1000).toLocaleDateString() : 'N/A';
-
-                            const retiredStatus = dogData.Retired ? 'Yes' : 'No';
-
-
-
-                            dogItems += `
-
-                                <li>
-
-                                    <div class="dog-info">
-
-                                        <strong>Call Name:</strong> ${dogData.DogCallName || 'N/A'}<br>
-
-                                        <strong>Registered Name:</strong> ${dogData.DogRegName || 'N/A'}<br>
-
-                                        <strong>Birthdate:</strong> ${birthdate}<br>
-
-                                        <strong>AKC Reg. #:</strong> ${dogData.AKCRegNum || 'N/A'}<br>
-
-                                        <strong>Retired:</strong> ${retiredStatus}<br>
-
-                                        <strong>Sex:</strong> ${dogData.Sex || 'N/A'}<br>
-
-                                        <strong>Titles:</strong> ${titles}
-
-                                    </div>
-
-                                    <div class="dog-actions">
-
-                                        <button onclick="editDog('${dogId}')">Edit</button>
-
-                                    </div>
-
-                                </li>
-
-                            `;
-
-                        });
-
-                        dogListElement.innerHTML = dogItems;
-
-                    }
-
-                })
-
-                .catch((error) => {
-
-                    console.error('Error fetching dogs:', error);
-
-                    errorMessageElement.textContent = 'Failed to load your dogs.';
-
-                    errorMessageElement.style.display = 'block';
-
-                    dogListElement.innerHTML = '';
-
-                });
-
-        }
-
-
-
-        function editDog(dogId) {
-
-            // Redirect to an edit dog page, passing the dog ID
-
-            window.location.href = `edit_dog.html?id=${dogId}`; // You'll need to create this page
-
-        }
-
-    </script>
-
+    <div class="container">
+        <h2>Your Dogs</h2>
+        <div class="button-container">
+            <button id="add-dog-button">Add New Dog</button>
+            <a href="profile.html" style="text-decoration: none;"><button>Return to Profile</button></a>
+        </div>
+        <ul id="dog-list">
+            <li>Loading dogs...</li>
+        </ul>
+        <div id="dog-details">
+            <h3>Dog Details</h3>
+            <div id="details-content">
+                <p>Select a dog from the list to view details.</p>
+            </div>
+            <div class="dog-actions">
+                <button id="edit-dog-button" style="display: none;">Edit Dog</button>
+            </div>
+        </div>
+
+        <div id="edit-form" style="display: none;">
+            <h3>Edit Dog</h3>
+            <form id="dog-edit-form">
+                <div class="form-group">
+                    <label for="edit-dogcallname">Call Name:</label>
+                    <input type="text" id="edit-dogcallname" name="edit-dogcallname" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-dogregname">Registered Name:</label>
+                    <input type="text" id="edit-dogregname" name="edit-dogregname">
+                </div>
+                <div class="form-group">
+                    <label for="edit-birthdate">Birthdate:</label>
+                    <input type="date" id="edit-birthdate" name="edit-birthdate">
+                </div>
+                <div class="form-group">
+                    <label for="edit-akcregnum">AKC Reg. #:</label>
+                    <input type="text" id="edit-akcregnum" name="edit-akcregnum">
+                </div>
+                <div class="form-group">
+                    <label for="edit-retired">Retired:</label>
+                    <input type="checkbox" id="edit-retired" name="edit-retired"> Yes
+                </div>
+                <div class="form-group">
+                    <label for="edit-sex">Sex:</label>
+                    <select id="edit-sex" name="edit-sex">
+                        <option value="">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-title">Titles (comma-separated):</label>
+                    <input type="text" id="edit-title" name="edit-title">
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Save Changes</button>
+                    <button type="button" id="cancel-edit-button">Cancel</button>
+                </div>
+                <div id="edit-error-message" class="error-message" style="display: none;"></div>
+            </form>
+        </div>
+
+        <div id="error-message" class="error-message" style="display: none;"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        // Firebase configuration (replace with your actual config if different)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDudaFY9ZkQthsOPkn5MKCWUV4GdJ__YEI",
+            authDomain: "major-maker-580e8.firebaseapp.com",
+            databaseURL: "https://major-maker-580e8-default-rtdb.firebaseio.com",
+            projectId: "major-maker-580e8",
+            storageBucket: "major-maker-580e8.firebasestorage.app",
+            messagingSenderId: "342221542780",
+            appId: "1:342221542780:web:057da75b81136edd4a40f9",
+            measurementId: "G-LGWRJMMMSS"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const dogListElement = document.getElementById('dog-list');
+        const errorMessageElement = document.getElementById('error-message');
+        const addDogButton = document.getElementById('add-dog-button');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // User is logged in, fetch their dogs
+                    fetchUserDogs(user.uid);
+                } else {
+                    // User is not logged in, redirect to login
+                    window.location.href = 'index.html'; // Or your login page
+                }
+            });
+
+            addDogButton.addEventListener('click', () => {
+                // Redirect to a page to add a new dog
+                window.location.href = 'add_dog.html'; // You'll need to create this page
+            });
+        });
+
+        function fetchUserDogs(ownerId) {
+            dogListElement.innerHTML = '<li>Loading dogs...</li>';
+            errorMessageElement.style.display = 'none';
+
+            db.collection('Dog')
+                .where('OwnerID', '==', ownerId)
+                .get()
+                .then((querySnapshot) => {
+                    if (querySnapshot.empty) {
+                        dogListElement.innerHTML = '<li>No dogs found.</li>';
+                    } else {
+                        let dogItems = '';
+                        querySnapshot.forEach((doc) => {
+                            const dogData = doc.data();
+                            const dogId = doc.id;
+                            const titles = dogData.Title ? dogData.Title.join(', ') : 'None';
+                            const birthdate = dogData.Birthdate ? new Date(dogData.Birthdate.seconds * 1000).toLocaleDateString() : 'N/A';
+                            const retiredStatus = dogData.Retired ? 'Yes' : 'No';
+
+                            dogItems += `
+                                <li>
+                                    <div class="dog-info">
+                                        <strong>Call Name:</strong> ${dogData.DogCallName || 'N/A'}<br>
+                                        <strong>Registered Name:</strong> ${dogData.DogRegName || 'N/A'}<br>
+                                        <strong>Birthdate:</strong> ${birthdate}<br>
+                                        <strong>AKC Reg. #:</strong> ${dogData.AKCRegNum || 'N/A'}<br>
+                                        <strong>Retired:</strong> ${retiredStatus}<br>
+                                        <strong>Sex:</strong> ${dogData.Sex || 'N/A'}<br>
+                                        <strong>Titles:</strong> ${titles}
+                                    </div>
+                                    <div class="dog-actions">
+                                        <button onclick="editDog('${dogId}')">Edit</button>
+                                    </div>
+                                </li>
+                            `;
+                        });
+                        dogListElement.innerHTML = dogItems;
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching dogs:', error);
+                    errorMessageElement.textContent = 'Failed to load your dogs.';
+                    errorMessageElement.style.display = 'block';
+                    dogListElement.innerHTML = '';
+                });
+        }
+
+        function editDog(dogId) {
+            // Redirect to an edit dog page, passing the dog ID
+            window.location.href = `edit_dog.html?id=${dogId}`; // You'll need to create this page
+        }
+    </script>
 </body>
-
 </html>
