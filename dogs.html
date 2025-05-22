@@ -148,6 +148,7 @@
         <h2>Your Dogs</h2>
         <div class="button-container">
             <button id="add-dog-button">Add New Dog</button>
+            <a href=#><button onclick="editDog('${dogId}')">Edit Dog</button>
             <a href="profile.html" style="text-decoration: none;"><button>Return to Profile</button></a>
         </div>
         <ul id="dog-list">
@@ -281,9 +282,9 @@
                                         <strong>Sex:</strong> ${dogData.Sex || 'N/A'}<br>
                                         <strong>Titles:</strong> ${titles} -->
                                     </div>
-                                    <div class="dog-actions">
+                                    <!-- <div class="dog-actions">
                                         <button onclick="editDog('${dogId}')">Edit</button>
-                                    </div>
+                                    </div> -->
                                 </li>
                             `;
                         });
@@ -299,8 +300,8 @@
         }
 
         function editDog(dogId) {
-            // Redirect to an edit dog page, passing the dog ID
-            window.location.href = `edit_dog.html?id=${dogId}`; // You'll need to create this page
+            <!-- // Redirect to an edit dog page, passing the dog ID
+            window.location.href = `edit_dog.html?id=${dogId}`; // You'll need to create this page -->
         }
     </script>
 </body>
