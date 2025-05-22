@@ -266,7 +266,7 @@ function fetchUserDogs(ownerId) {
                         const dogId = doc.id;
                         dogItems += `
                             <li>
-                                <input type="radio" name="selectedDog" value="${dogId}" onchange="editDog('${dogId}')">
+                                <input type="radio" name="selectedDog" value="${dogId}" onchange="displayDogListInDetails('${dogId}')">
                                 ${dogData.DogCallName || 'N/A'}
                             </li>
                         `;
@@ -282,6 +282,26 @@ function fetchUserDogs(ownerId) {
             });
     }
 
+function displayDogListInDetails(dogId) {
+    const detailsContentDiv = document.getElementById('details-content');
+    let dogItemsHTML = '<ul id="dog-list-in-details">';
+
+    if (dogs && dogs.length > 0) {
+        dogs.forEach(dog => {
+            dogItemsHTML += `
+                <li onclick="editDog('${dog.id}')" style="cursor: pointer; padding: 8px; border-bottom: 1px solid #eee;">
+                    ${dog.data().DogCallName || 'N/A'}
+                </li>
+            `;
+        });
+    } else {
+        dogItemsHTML += '<li>No dogs found.</li>';
+    }
+
+    dogItemsHTML += '</ul>';
+    detailsContentDiv.innerHTML = dogItemsHTML;
+}
+        
         function editDog(dogId) {
             <!-- // Redirect to an edit dog page, passing the dog ID
             window.location.href = `edit_dog.html?id=${dogId}`; // You'll need to create this page -->
