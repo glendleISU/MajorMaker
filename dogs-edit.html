@@ -344,8 +344,6 @@
             }
         }
 
-        import { getAuth } from "firebase/auth"; // If you are using modular SDK
-        
         editDogForm.addEventListener('submit', async function(event) {
             event.preventDefault();
 
@@ -370,17 +368,6 @@
                 birthdateFirestore = new Date(utcMilliseconds);
             }
 
-            const auth = getAuth(); // For modular SDK
-            const currentUser = auth.currentUser;
-            let ownerId = null;
-
-            if (currentUser) {
-                ownerId = currentUser.uid;
-            } else {
-                displayStatusMessage('User not authenticated. Cannot add dog.', 'error');
-                return; // Stop the submission if no user is logged in
-            }
-            
             const newDogData = {
                 DogCallName: callname,
                 DogRegName: regname,
