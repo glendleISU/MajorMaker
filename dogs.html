@@ -288,7 +288,7 @@ function displayDogListInDetails(dogId) {
         errorMessageElement.style.display = 'none';
 
         db.collection('Dog')
-            .where('DogID', '==', dogId)
+            .where('doc.Id', '==', dogId)
             .get()
             .then((querySnapshot) => {
                 if (querySnapshot.empty) {
@@ -302,12 +302,12 @@ function displayDogListInDetails(dogId) {
                                 <li>
                                     <div class="dog-info">
                                         <strong>Call Name:</strong> ${dogData.DogCallName || 'N/A'}<br>
-                                        <!-- <strong>Registered Name:</strong> ${dogData.DogRegName || 'N/A'}<br>
+                                        <strong>Registered Name:</strong> ${dogData.DogRegName || 'N/A'}<br>
                                         <strong>Birthdate:</strong> ${birthdate}<br>
                                         <strong>AKC Reg. #:</strong> ${dogData.AKCRegNum || 'N/A'}<br>
                                         <strong>Retired:</strong> ${retiredStatus}<br>
                                         <strong>Sex:</strong> ${dogData.Sex || 'N/A'}<br>
-                                        <strong>Titles:</strong> ${titles} -->
+                                        <strong>Titles:</strong> ${titles}
                                     </div>
                                 </li>
                         `;
