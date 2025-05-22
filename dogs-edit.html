@@ -62,13 +62,30 @@
             box-sizing: border-box;
         }
 
-        .checkbox-group label {
+        <!-- .checkbox-group label {
             display: inline-block;
             justify-content: left;
             margin-right: 15px;
             font-weight: normal;
+        } -->
+
+        .form-group#retired-group { /* Add an ID to the retired form-group */
+            display: flex;
+            align-items: center; /* Vertically align label and input */
+            gap: 10px; /* Add some space between label and input */
         }
 
+        .form-group#retired-group label {
+            display: inline-block; /* Keep label on the same line */
+            margin-bottom: 0; /* Remove default bottom margin */
+            font-weight: bold; /* Keep the label bold */
+        }
+
+        .form-group#retired-group input[type="checkbox"] {
+            width: auto; /* Adjust width to content */
+            margin-left: 0; /* Remove any default left margin */
+        }
+    
         #status-message {
             margin-top: 20px;
             padding: 10px;
