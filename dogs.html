@@ -253,9 +253,11 @@
 function fetchUserDogs(ownerId) {
         dogListElement.innerHTML = '<li>Loading dogs...</li>';
         errorMessageElement.style.display = 'none';
-
+        dogDetailElement.innerHTML = '<p>Select a dog from the list to view details.</p>'; // Initial message
+    
         db.collection('Dog')
             .where('OwnerID', '==', ownerId)
+            .orderBy('DogCallName') // Optional: Order by call name
             .get()
             .then((querySnapshot) => {
                 if (querySnapshot.empty) {
@@ -280,46 +282,40 @@ function fetchUserDogs(ownerId) {
                 errorMessageElement.textContent = 'Failed to load your dogs.';
                 errorMessageElement.style.display = 'block';
                 dogListElement.innerHTML = '';
+                dogDetailElement.innerHTML = ''; // Clear details on error
             });
     }
 
-function displayDogListInDetails(dogId) {
-     dogDetailElement.innerHTML = '<li>Loading data...</li>';
+ function fetchAndDisplayDogDetails(dogId) {
+        dogDetailElement.innerHTML = '<p>Loading dog details...</p>';
         errorMessageElement.style.display = 'none';
 
-        db.collection('Dog')
-            .where('doc.Id', '==', dogId)
-            .get()
-            .then((querySnapshot) => {
-                if (querySnapshot.empty) {
-                    dogDetailElement.innerHTML = '<li>No dogs found.</li>';
+        db.collection('Dog').doc(dogId).get()
+            .then((doc) => {
+                if (doc.exists) {
+                    const dogData = doc.data();
+                    const birthdate = dogData.Birthdate ? new Date(dogData.Birthdate.seconds * 1000).toLocaleDateString() : 'N/A';
+                    const titles = dogData.Title ? dogData.Title.join(', ') : 'None';
+                    dogDetailElement.innerHTML = `
+                        <div class="dog-info">
+                            <strong>Call Name:</strong> ${dogData.DogCallName || 'N/A'}<br>
+                            <strong>Registered Name:</strong> ${dogData.DogRegName || 'N/A'}<br>
+                            <strong>Birthdate:</strong> ${birthdate}<br>
+                            <strong>AKC Reg. #:</strong> ${dogData.AKCRegNum || 'N/A'}<br>
+                            <strong>Retired:</strong> ${dogData.Retired ? 'Yes' : 'No'}<br>
+                            <strong>Sex:</strong> ${dogData.Sex || 'N/A'}<br>
+                            <strong>Titles:</strong> ${titles}
+                        </div>
+                    `;
                 } else {
-                    let dogItems = '';
-                    querySnapshot.forEach((doc) => {
-                        const dogData = doc.data();
-                        <!-- const dogId = doc.id; -->
-                        dogItems += `
-                                <li>
-                                    <div class="dog-info">
-                                        <strong>Call Name:</strong> ${dogData.DogCallName || 'N/A'}<br>
-                                        <strong>Registered Name:</strong> ${dogData.DogRegName || 'N/A'}<br>
-                                        <strong>Birthdate:</strong> ${birthdate}<br>
-                                        <strong>AKC Reg. #:</strong> ${dogData.AKCRegNum || 'N/A'}<br>
-                                        <strong>Retired:</strong> ${retiredStatus}<br>
-                                        <strong>Sex:</strong> ${dogData.Sex || 'N/A'}<br>
-                                        <strong>Titles:</strong> ${titles}
-                                    </div>
-                                </li>
-                        `;
-                    });
-                    dogDetailElement.innerHTML = dogItems;
+                    dogDetailElement.innerHTML = '<p>Dog details not found.</p>';
                 }
             })
             .catch((error) => {
-                console.error('Error fetching dogs:', error);
-                errorMessageElement.textContent = 'Failed to load.';
+                console.error('Error fetching dog details:', error);
+                errorMessageElement.textContent = 'Failed to load dog details.';
                 errorMessageElement.style.display = 'block';
-                dogDetailElement.innerHTML = '';
+                dogDetailElement.innerHTML = '<p>Failed to load dog details.</p>';
             });
     }
         
