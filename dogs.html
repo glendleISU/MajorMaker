@@ -253,11 +253,10 @@
 function fetchUserDogs(ownerId) {
         dogListElement.innerHTML = '<li>Loading dogs...</li>';
         errorMessageElement.style.display = 'none';
-        <!-- dogDetailElement.innerHTML = '<p>Select a dog from the list to view details.</p>'; // Initial message -->
     
         db.collection('Dog')
             .where('OwnerID', '==', ownerId)
-            <!-- .orderBy('DogCallName') // Optional: Order by call name -->
+            .orderBy('DogCallName') // Optional: Order by call name
             .get()
             .then((querySnapshot) => {
                 if (querySnapshot.empty) {
