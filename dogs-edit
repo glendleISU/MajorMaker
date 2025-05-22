@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintain Dog(s)</title>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%;
+            text-align: left; /* Align form content to the left */
+        }
+
+        h1 {
+            color: #0056b3;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center; /* Center the heading */
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea {
+            width: calc(100% - 22px); /* Adjust width for padding and border */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        textarea {
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 100px; /* Minimum height for textareas */
+        }
+
+         .checkbox-group label {
+             display: inline-block; /* Arrange checkboxes horizontally */
+             margin-right: 15px; /* Space between checkboxes */
+             font-weight: normal; /* Labels for checkboxes don't need to be bold */
+         }
+
+          #status-message {
+              margin-top: 20px;
+              padding: 10px;
+              border-radius: 4px;
+              display: none; /* Hidden by default */
+          }
+
+          #status-message.success {
+              background-color: #d4edda; /* Light green */
+              color: #155724; /* Dark green */
+              border-color: #c3e6cb;
+          }
+
+           #status-message.error {
+               background-color: #f8d7da; /* Light red */
+               color: #721c24; /* Dark red */
+               border-color: #f5c6cb;
+           }
+
+
+        /* --- Button Styling --- */
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 30px; /* Space above buttons */
+        }
+
+        .button-container button[type="submit"] {
+             flex-grow: 1;
+             padding: 12px 20px;
+             font-size: 1rem;
+             color: #fff;
+             background-color: #28a745; /* Green for Save */
+             border: none;
+             border-radius: 5px;
+             cursor: pointer;
+             transition: background-color 0.3s ease;
+             min-width: 150px;
+        }
+
+        .button-container button[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+
+        .button-container a {
+            flex-grow: 1;
+            padding: 12px 20px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #007bff; /* Blue */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-width: 150px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .button-container a:hover {
+            background-color: #0056b3;
+        }
+         /* --- End Button Styling --- */
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Maintain your dogs</h1>
+
+        <form id="create-dog-form">
+
+            <div class="form-group">
+                <label for="dog-call-name">Dog Call Name:</label>
+                <input type="text" id="dog-call-name" name="DogCallName" required>
+            </div>
+      
+            <div class="form-group">
+                <label for="dog-reg-name">Dog Registered Name:</label>
+                <input type="text" id="dog-reg-name" name="DogRegName" required>
+            </div>
+      
+             <div class="form-group">
+                 <label>Title(s):</label>
+                 <div class="checkbox-group">
+                     <label><input type="checkbox" name="Title[]" value="Champion"> Champion</label>
+                 </div>
+             </div>
+
+            <div id="status-message"></div> <div class="button-container">
+                <button type="submit">Save Changes</button>
+                <a href="dogs.html">Your Dogs</a> <a href="index.html">Back to Home</a> </div>
+
+        </form>
+
+    </div>
+
+    <script>
+        // --- Firebase Configuration ---
+        // REPLACE THIS OBJECT WITH YOUR ACTUAL FIREBASE CONFIGURATION
+        const firebaseConfig = {
+          apiKey: "AIzaSyDudaFY9ZkQthsOPkn5MKCWUV4GdJ__YEI",
+          authDomain: "major-maker-580e8.firebaseapp.com",
+          databaseURL: "https://major-maker-580e8-default-rtdb.firebaseio.com",
+          projectId: "major-maker-580e8",
+          storageBucket: "major-maker-580e8.firebasestorage.app",
+          messagingSenderId: "342221542780",
+          appId: "1:342221542780:web:057da75b81136edd4a40f9",
+          measurementId: "G-LGWRJMMMSS"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+
+        // Get a reference to the Firestore database
+        const db = firebase.firestore();
+
+        // Get a reference to the "dogs" collection
+        const recipesCollection = db.collection('Dog');
+
+
+        // --- Global variable to store the ID if we are in edit mode ---
+        let editingDogId = null;
+
+        // --- Get references to form elements and status message area ---
+        const createDogForm = document.getElementById('create-dog-form');
+        const statusMessageDiv = document.getElementById('status-message');
+        const pageTitle = document.querySelector('h1'); // Get the page title
+        const submitButton = createDogForm.querySelector('button[type="submit"]'); // Get the submit button
+
+        // Get references to all input fields by their IDs
+        const callnameInput = document.getElementById('dog-call-name');
+        const regnameInput = document.getElementById('dog-reg-name');
+        const akcRegNumInput = document.getElementById('AKCRegNum');
+        const sexInput = document.getElementById('sex');
+        const retiredInput = document.getElementById('retired');
+        const birthdateInput = document.getElementById('birthdate');
+        const breedInput = document.getElementById('breed');
+        const titlepreCheckboxes = document.querySelectorAll('input[name="titles-pre[]"]');
+        const titlesufCheckboxes = document.querySelectorAll('input[name="titles-suf[]"]');
+
+
+        // Function to display status messages (remains the same)
+        function displayStatusMessage(message, type) {
+            statusMessageDiv.textContent = message;
+            statusMessageDiv.className = ''; // Clear existing classes
+            statusMessageDiv.classList.add(type); // Add 'success', 'error', or 'info' class
+            statusMessageDiv.style.display = 'block'; // Make the message area visible
+
+            // Optional: Hide the message after a few seconds
+            // setTimeout(() => {
+            //     statusMessageDiv.style.display = 'none';
+            // }, 5000); // Hide after 5 seconds
+        }
+
+        // Function to populate the form with dog data
+        function populateForm(dogData) {
+            callnameInput.value = dogData['Call Name'] || '';
+            regnameInput.value = dogData['Registered Name'] || '';
+            breedInput.value = dogData.breed || '';
+            akcRegNumInput.value = dogData['AKC Registration Number'] || '';
+            birthdateInput.value = dogData.Birthdate || '';
+            sexInput.value = dogData.sex || '';
+            retiredInput.value = dogData.retired || '';
+
+            // Populate Title-Pre checkboxes
+            if (dogData.TitlePre && Array.isArray(dogData.Title-Pre)) {
+                 titlepreCheckboxes.forEach(checkbox => {
+                      // Check the box if its value is in the dog's Titles-Pre array
+                     checkbox.checked = dogData.TitlePre.includes(checkbox.value);
+                 });
+            } else if (dogData.TitlePre && typeof dogData.TitlePre === 'string') {
+                 // Handle if TitlePre is a single string (check the box that matches the string)
+                 titlepreCheckboxes.forEach(checkbox => {
+                     checkbox.checked = (checkbox.value === dogData.TitlePre);
+                 });
+            } else {
+                // If TitlePre is missing or not an array/string, uncheck all
+                 titlepreCheckboxes.forEach(checkbox => {
+                     checkbox.checked = false;
+                 });
+            }
+
+                      // Populate Title-Suf checkboxes
+            if (dogData.TitleSuf && Array.isArray(dogData.Title-Suf)) {
+                 titlesufCheckboxes.forEach(checkbox => {
+                      // Check the box if its value is in the dog's Titles-Suf array
+                     checkbox.checked = dogData.TitleSuf.includes(checkbox.value);
+                 });
+            } else if (dogData.TitleSuf && typeof dogData.TitleSuf === 'string') {
+                 // Handle if TitleSuf is a single string (check the box that matches the string)
+                 titlesufCheckboxes.forEach(checkbox => {
+                     checkbox.checked = (checkbox.value === dogData.TitleSuf);
+                 });
+            } else {
+                // If TitleSuf is missing or not an array/string, uncheck all
+                 titlesufCheckboxes.forEach(checkbox => {
+                     checkbox.checked = false;
+                 });
+            }
+        }
+
+        // Function to fetch a dog by ID for editing
+        async function fetchDogForEditing(recipeId) {
+            try {
+                 displayStatusMessage('Loading dog for editing...', 'info');
+
+                const doc = await DogCollection.doc(dogId).get();
+
+                if (!doc.exists) {
+                    displayStatusMessage('Dog not found for editing.', 'error');
+                    console.error("Dog document not found with ID:", dogId);
+                    return; // Stop the process
+                }
+
+                const dogData = doc.data();
+                populateForm(dogData); // Fill the form
+
+                displayStatusMessage('Dog loaded for editing.', 'success');
+
+
+            } catch (error) {
+                console.error("Error fetching dog for editing:", error);
+                 displayStatusMessage(`Error loading dog for editing: ${error.message}`, 'error');
+            }
+        }
+
+
+        // --- Form Submission Handler (handles both Create and Update) ---
+        createDogForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // --- Get Form Values ---
+            const callname = document.getElementById('dog-call-name').value.trim();
+            const regname = document.getElementById('dog-reg-name').value.trim();
+            const akcRegNum = document.getElementById('AKCRegNum').value.trim();
+            const sex = document.getElementById('sex').value.trim();
+            const retired = document.getElementById('retired').value.trim();
+            const birthday = document.getElementById('birthday').value.trim();
+            const breed = document.getElementById('breed').value.trim();
+
+            const titlepreCheckboxes = document.querySelectorAll('input[name="titlepre[]"]:checked');
+            const titlepre = Array.from(titlepreCheckboxes).map(checkbox => checkbox.value);
+          
+            const titlesufCheckboxes = document.querySelectorAll('input[name="titlesuf[]"]:checked');
+            const titlepre = Array.from(titlesufCheckboxes).map(checkbox => checkbox.value);
+
+            <!-- // --- Basic Validation ---
+            if (!name || isNaN(servings) || servings <= 0 || !ingredients.length || !directions) {
+                 displayStatusMessage('Please fill in all required fields (Name, Servings, Ingredients, Directions).', 'error');
+                 return;
+            } -->
+
+            // --- Prepare Data for Firestore ---
+            const dogDataToSave = { // Use a new variable name
+                DogCallName: callname,
+                DogRegName: regname,
+                AKCRegNum: akcRegNum,
+                Sex: sex,
+                Retired: retired,
+                Birthday: birthday,
+                Breed: breed,
+                TitlePre: titlepre,
+                TitleSuf: titlesuf,
+            };
+
+
+            // --- Save or Update Data in Firestore ---
+            try {
+                 if (editingDogId) {
+                     // --- Update Existing Document ---
+                     displayStatusMessage('Updating dog...', 'info');
+                     // Use set() with merge: true if you only want to update specific fields
+                     // or set() without merge: true to overwrite the entire document
+                     // Using set() to overwrite the document with the new form data is simpler for this case.
+                     await dogCollection.doc(editingDogId).set(dogDataToSave);
+                     console.log("Document updated with ID: ", editingDogId);
+                     displayStatusMessage('Dog updated successfully!', 'success');
+
+                     // Optional: Navigate back to view page after update
+                     // setTimeout(() => {
+                     //      window.location.href = 'dogs.html';
+                     // }, 2000); // Wait 2 seconds before navigating
+
+
+                 } else {
+                     // --- Add New Document (Original Create Logic) ---
+                     displayStatusMessage('Saving dog...', 'info');
+                     const docRef = await dogsCollection.add(dogDataToSave);
+                     console.log("Document written with ID: ", docRef.id);
+                     displayStatusMessage('Dog saved successfully!', 'success');
+
+                     // Optional: Clear the form after successful creation
+                     createDogForm.reset();
+                     document.getElementById('ingredients').value = '';
+                     document.getElementById('tags').value = '';
+                 }
+
+
+            } catch (error) {
+                console.error("Error saving/updating document: ", error);
+                displayStatusMessage(`Error saving/updating dog: ${error.message}`, 'error');
+            }
+        });
+
+
+        // --- Initial Setup: Check for dog ID in URL on page load ---
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dogIdFromUrl = urlParams.get('id'); // Get the 'id' parameter from the URL
+
+            if (dogIdFromUrl) {
+                editingDogId = dogIdFromUrl; // Store the ID
+                pageTitle.textContent = 'Edit Dog'; // Change the page title
+                submitButton.textContent = 'Update Dog'; // Change the button text
+
+                fetchDogForEditing(editingDogId); // Fetch and populate the form
+            } else {
+                 // If no ID in the URL, we are in create mode
+                 pageTitle.textContent = 'Create New Dog';
+                 submitButton.textContent = 'Save Dog';
+                 console.log("In Create mode.");
+                 // No need to fetch or populate, form is empty by default
+            }
+        });
+
+    </script>
+
+</body>
+</html>
