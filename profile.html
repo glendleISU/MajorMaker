@@ -46,7 +46,7 @@
             background-color: #007bff;
             color: white;
             transition: background-color 0.3s ease;
-            margin-top: 20px;
+            margin-top: 15px; /* Added some margin */
             width: 100%;
         }
         button:hover {
@@ -94,6 +94,7 @@
             <p class="profile-info"><strong>Email:</strong> <span id="user-email"></span></p>
         </div>
         <div id="error-message" style="display: none;"></div>
+        <button id="view-dogs-button">View Dogs</button>
         <button id="edit-profile-button">Edit Profile (Coming Soon)</button>
         <div class="back-link">
             <a href="index.html">Back to Home</a>
@@ -149,6 +150,7 @@
         const errorMessageDiv = document.getElementById('error-message');
         const createProfileForm = document.getElementById('create-profile-form');
         const newProfileErrorMessageDiv = document.getElementById('new-profile-error-message');
+        const viewDogsButton = document.getElementById('view-dogs-button'); // Get the new button
 
         document.addEventListener('DOMContentLoaded', () => {
             auth.onAuthStateChanged(user => {
@@ -164,6 +166,11 @@
             createProfileForm.addEventListener('submit', (event) => {
                 event.preventDefault();
                 saveNewUserProfile();
+            });
+
+            // Event listener for the "View Dogs" button
+            viewDogsButton.addEventListener('click', () => {
+                window.location.href = 'dogs.html';
             });
         });
 
