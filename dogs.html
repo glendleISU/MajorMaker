@@ -48,22 +48,43 @@
         #dog-list {
             list-style: none;
             padding: 0;
-        }
-        #dog-list li {
             border: 1px solid #ddd;
             border-radius: 4px;
-            padding: 15px;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
         }
-        .dog-info {
-            flex-grow: 1;
+        #dog-list li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        #dog-list li:last-child {
+            border-bottom: none;
+        }
+        #dog-list li.selected {
+            background-color: #f0f0f0;
+        }
+        #dog-details {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .detail-row {
+            margin-bottom: 10px;
+        }
+        .detail-row label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .dog-actions {
+            margin-top: 20px;
+            text-align: center;
         }
         .dog-actions button {
-            margin-left: 10px;
+            margin: 0 10px;
             background-color: #5cb85c;
         }
         .dog-actions button:hover {
@@ -85,6 +106,41 @@
         .back-link a:hover {
             text-decoration: underline;
         }
+        #edit-form {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        #edit-form h3 {
+            margin-top: 0;
+        }
+        #edit-form .form-group {
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        #edit-form .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        #edit-form .form-actions {
+            text-align: center;
+            margin-top: 15px;
+        }
+        #edit-form .form-actions button {
+            margin: 0 10px;
+        }
+        input[type="text"], input[type="date"], select, input[type="checkbox"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            width: 100%;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -97,6 +153,59 @@
         <ul id="dog-list">
             <li>Loading dogs...</li>
         </ul>
+        <div id="dog-details">
+            <h3>Dog Details</h3>
+            <div id="details-content">
+                <p>Select a dog from the list to view details.</p>
+            </div>
+            <div class="dog-actions">
+                <button id="edit-dog-button" style="display: none;">Edit Dog</button>
+            </div>
+        </div>
+
+        <div id="edit-form" style="display: none;">
+            <h3>Edit Dog</h3>
+            <form id="dog-edit-form">
+                <div class="form-group">
+                    <label for="edit-dogcallname">Call Name:</label>
+                    <input type="text" id="edit-dogcallname" name="edit-dogcallname" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-dogregname">Registered Name:</label>
+                    <input type="text" id="edit-dogregname" name="edit-dogregname">
+                </div>
+                <div class="form-group">
+                    <label for="edit-birthdate">Birthdate:</label>
+                    <input type="date" id="edit-birthdate" name="edit-birthdate">
+                </div>
+                <div class="form-group">
+                    <label for="edit-akcregnum">AKC Reg. #:</label>
+                    <input type="text" id="edit-akcregnum" name="edit-akcregnum">
+                </div>
+                <div class="form-group">
+                    <label for="edit-retired">Retired:</label>
+                    <input type="checkbox" id="edit-retired" name="edit-retired"> Yes
+                </div>
+                <div class="form-group">
+                    <label for="edit-sex">Sex:</label>
+                    <select id="edit-sex" name="edit-sex">
+                        <option value="">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-title">Titles (comma-separated):</label>
+                    <input type="text" id="edit-title" name="edit-title">
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Save Changes</button>
+                    <button type="button" id="cancel-edit-button">Cancel</button>
+                </div>
+                <div id="edit-error-message" class="error-message" style="display: none;"></div>
+            </form>
+        </div>
+
         <div id="error-message" class="error-message" style="display: none;"></div>
     </div>
 
