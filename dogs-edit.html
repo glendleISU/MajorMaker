@@ -368,7 +368,7 @@
                 birthdateFirestore = new Date(utcMilliseconds);
             }
 
-            const dogDataToUpdate = {
+            const newDogData = {
                 DogCallName: callname,
                 DogRegName: regname,
                 AKCRegNum: akcRegNum,
@@ -379,18 +379,27 @@
                 Birthdate: birthdateFirestore,
             };
 
-            try {
-                displayStatusMessage('Saving changes...', 'info');
-                await dogsCollection.doc(editingDogId).update(dogDataToUpdate);
-                displayStatusMessage('Dog details updated successfully!', 'success');
-                setTimeout(() => {
-                    window.location.href = 'dogs.html';
-                }, 1500);
-            } catch (error) {
-                console.error("Error updating document:", error);
-                displayStatusMessage(`Error updating dog: ${error.message}`, 'error');
-            }
-        });
+             try {
+        displayStatusMessage('Saving changes...', 'info');
+        if (editingDogId) {
+            // Editing an existing dog
+            await dogsCollection.doc(editingDogId).update(newDogData);
+            displayStatusMessage('Dog details updated successfully!', 'success');
+        } else {
+            // Adding a new dog
+            await dogsCollection.add(newDogData);
+            displayStatusMessage('New dog added successfully!', 'success');
+            // Optionally redirect to the dogs list or clear the form after adding
+            editDogForm.reset(); // Clear the form
+        }
+        setTimeout(() => {
+            window.location.href = 'dogs.html';
+        }, 1500);
+    } catch (error) {
+        console.error("Error saving dog:", error);
+        displayStatusMessage(`Error saving dog: ${error.message}`, 'error');
+    }
+});
 
         window.addEventListener('load', function() {
             const urlParams = new URLSearchParams(window.location.search);
