@@ -331,7 +331,7 @@
             }
         });
 
-        function populateForm(dogData) {
+    function populateForm(dogData) {
         callnameInput.value = dogData.DogCallName || '';
         regnameInput.value = dogData.DogRegName || '';
         akcRegNumInput.value = dogData.AKCRegNum || '';
@@ -344,13 +344,13 @@
     // Helper function to format Firebase Timestamp for input type="date" (for display)
     function formatDateForInput(date) {
         if (date && date.toDate) { // Check if it's a Firebase Timestamp
-            const jsDate = date.toDate(); // Convert to JavaScript Date object
+            const jsDate = date.toDate(); // Convert to JavaScript Date object (local timezone)
             const year = jsDate.getFullYear();
             const month = String(jsDate.getMonth() + 1).padStart(2, '0');
             const day = String(jsDate.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
         } else if (typeof date === 'string') {
-            return date; // If it's already a string in YYYY-MM-DD format
+            return date; // If it's already a string in YYYY-MM-DD format (shouldn't happen with Firebase Timestamps)
         }
         return '';
     }
