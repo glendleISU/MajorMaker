@@ -321,6 +321,37 @@ function fetchUserDogs(ownerId) {
             <!-- // Redirect to an edit dog page, passing the dog ID
             window.location.href = `edit_dog.html?id=${dogId}`; // You'll need to create this page -->
         }
+
+        // Add click listener to the "Edit Dog" button
+         editDogButton.addEventListener('click', function(event) {
+             event.preventDefault(); // Prevent the default link behavior (#)
+
+              // Find the currently selected dog list item
+             const selectedItem = dogListContainer.querySelector('.dog-list-item.selected');
+
+              // Clear any previously displayed details or messages
+             dogDetailsContainer.innerHTML = '';
+             dogDetailsContainer.style.display = 'none';
+
+
+             if (selectedItem) {
+                  const dogId = selectedItem.dataset.id;
+                   if (dogId) {
+                       console.log("Selected dog ID for editing:", dogId);
+                       // Navigate to dogs-edit.html, passing the dogId as a URL parameter
+                       window.location.href = `dogs-edit.html?id=${dogId}`;
+                   } else {
+                       console.warn("No dog ID found for the selected item.");
+                       dogDetailsContainer.innerHTML = '<p>Could not retrieve dog details for editing.</p>';
+                       dogDetailsContainer.style.display = 'block'; // Show message area
+                   }
+              } else {
+                   // If no item is selected, display an error message in the details area
+                   dogDetailsContainer.innerHTML = '<p>Please select a dog from the list to edit.</p>';
+                   dogDetailsContainer.style.display = 'block'; // Make details area visible
+              }
+         });
+        
     </script>
 </body>
 </html>
