@@ -148,7 +148,7 @@
         <h2>Your Dogs</h2>
         <div class="button-container">
             <button id="add-dog-button">Add New Dog</button>
-            <button onclick="editDog('${dogId}')">Edit Dog</button>
+           <button onclick="editSelectedDog()">Edit Dog</button>
             <a href="profile.html" style="text-decoration: none;"><button>Return to Profile</button></a>
         </div>
         <ul id="dog-list">
@@ -317,39 +317,23 @@ function fetchUserDogs(ownerId) {
             });
     }
         
-        function editDog(dogId) {
-            // Redirect to an edit dog page, passing the dog ID
+        function getSelectedDogId() {
+        const selectedRadio = document.querySelector('input[name="selectedDog"]:checked');
+        if (selectedRadio) {
+            return selectedRadio.value;
+        } else {
+            alert('Please select a dog from the list first.');
+            return null;
+        }
+    }
+
+    function editSelectedDog() {
+        const dogId = getSelectedDogId();
+        if (dogId) {
+            console.log("Selected dog ID for editing:", dogId);
             window.location.href = `dogs-edit.html?id=${dogId}`;
         }
-
-        // Add click listener to the "Edit Dog" button
-         editDogButton.addEventListener('click', function(event) {
-             event.preventDefault(); // Prevent the default link behavior (#)
-
-              // Find the currently selected dog list item
-             const selectedItem = dogListContainer.querySelector('.dog-list-item.selected');
-
-              // Clear any previously displayed details or messages
-             dogDetailsContainer.innerHTML = '';
-             dogDetailsContainer.style.display = 'none';
-
-
-             if (selectedItem) {
-                  const dogId = selectedItem.dataset.id;
-                   if (dogId) {
-                       console.log("Selected dog ID for editing:", dogId);
-                       // Navigate to dogs-edit.html, passing the dogId as a URL parameter
-                       window.location.href = `dogs-edit.html?id=${dogId}`;
-                   } else {
-                       console.warn("No dog ID found for the selected item.");
-                       dogDetailsContainer.innerHTML = '<p>Could not retrieve dog details for editing.</p>';
-                       dogDetailsContainer.style.display = 'block'; // Show message area
-                   }
-              } else {
-                   // If no item is selected, display an error message in the details area
-                   dogDetailsContainer.innerHTML = '<p>Please select a dog from the list to edit.</p>';
-                   dogDetailsContainer.style.display = 'block'; // Make details area visible
-              }
+    }
          });
         
     </script>
