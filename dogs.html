@@ -159,9 +159,6 @@
             <div id="details-content">
                 <p>Select a dog from the list to view details.</p>
             </div>
-            <!-- <div class="dog-actions">
-                <button id="edit-dog-button" style="display: none;">Edit Dog</button>
-            </div> -->
         </div>
 
         <div id="edit-form" style="display: none;">
@@ -252,52 +249,38 @@
             });
         });
 
-        function fetchUserDogs(ownerId) {
-            dogListElement.innerHTML = '<li>Loading dogs...</li>';
-            errorMessageElement.style.display = 'none';
+function fetchUserDogs(ownerId) {
+        dogListElement.innerHTML = '<li>Loading dogs...</li>';
+        errorMessageElement.style.display = 'none';
 
-            db.collection('Dog')
-                .where('OwnerID', '==', ownerId)
-                .get()
-                .then((querySnapshot) => {
-                    if (querySnapshot.empty) {
-                        dogListElement.innerHTML = '<li>No dogs found.</li>';
-                    } else {
-                        let dogItems = '';
-                        querySnapshot.forEach((doc) => {
-                            const dogData = doc.data();
-                            const dogId = doc.id;
-                            const titles = dogData.Title ? dogData.Title.join(', ') : 'None';
-                            const birthdate = dogData.Birthdate ? new Date(dogData.Birthdate.seconds * 1000).toLocaleDateString() : 'N/A';
-                            const retiredStatus = dogData.Retired ? 'Yes' : 'No';
-
-                            dogItems += `
-                                <li>
-                                    <div class="dog-info">
-                                        <strong>Call Name:</strong> ${dogData.DogCallName || 'N/A'}<br>
-                                        <!-- <strong>Registered Name:</strong> ${dogData.DogRegName || 'N/A'}<br>
-                                        <strong>Birthdate:</strong> ${birthdate}<br>
-                                        <strong>AKC Reg. #:</strong> ${dogData.AKCRegNum || 'N/A'}<br>
-                                        <strong>Retired:</strong> ${retiredStatus}<br>
-                                        <strong>Sex:</strong> ${dogData.Sex || 'N/A'}<br>
-                                        <strong>Titles:</strong> ${titles} -->
-                                    </div>
-                                    <!-- <div class="dog-actions">
-                                        <button onclick="editDog('${dogId}')">Edit</button>
-                                    </div> -->
-                                </li>
-                            `;
-                        });
-                        dogListElement.innerHTML = dogItems;
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching dogs:', error);
-                    errorMessageElement.textContent = 'Failed to load your dogs.';
-                    errorMessageElement.style.display = 'block';
-                    dogListElement.innerHTML = '';
-                });
-        }
+        db.collection('Dog')
+            .where('OwnerID', '==', ownerId)
+            .get()
+            .then((querySnapshot) => {
+                if (querySnapshot.empty) {
+                    dogListElement.innerHTML = '<li>No dogs found.</li>';
+                } else {
+                    let dogItems = '';
+                    querySnapshot.forEach((doc) => {
+                        const dogData = doc.data();
+                        const dogId = doc.id;
+                        dogItems += `
+                            <li>
+                                <input type="radio" name="selectedDog" value="${dogId}" onchange="editDog('${dogId}')">
+                                ${dogData.DogCallName || 'N/A'}
+                            </li>
+                        `;
+                    });
+                    dogListElement.innerHTML = dogItems;
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching dogs:', error);
+                errorMessageElement.textContent = 'Failed to load your dogs.';
+                errorMessageElement.style.display = 'block';
+                dogListElement.innerHTML = '';
+            });
+    }
 
         function editDog(dogId) {
             <!-- // Redirect to an edit dog page, passing the dog ID
