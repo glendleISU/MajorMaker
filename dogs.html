@@ -147,9 +147,10 @@
     <div class="container">
         <h2>Your Dogs</h2>
         <div class="button-container">
-            <button id="add-dog-button">Add New Dog</button>
-            <a href="profile.html" style="text-decoration: none;"><button>Return to Profile</button></a>
-        </div>
+     <button id="add-dog-button">Add New Dog</button>
+     <button id="edit-selected-dog-button" style="display: none;">Edit Selected Dog</button>
+     <a href="profile.html" style="text-decoration: none;"><button>Return to Profile</button></a>
+ </div>
         <ul id="dog-list">
             <li>Loading dogs...</li>
         </ul>
@@ -251,56 +252,69 @@
             });
         });
 
-        function fetchUserDogs(ownerId) {
-            dogListElement.innerHTML = '<li>Loading dogs...</li>';
-            errorMessageElement.style.display = 'none';
+let selectedDogId = null;
+ const editSelectedDogButton = document.getElementById('edit-selected-dog-button');
+ const dogDetailsDiv = document.getElementById('dog-details');
+ const detailsContentDiv = document.getElementById('details-content');
+ const editDogButtonBelowDetails = document.getElementById('edit-dog-button'); // The one below details
 
-            db.collection('Dog')
-                .where('OwnerID', '==', ownerId)
-                .get()
-                .then((querySnapshot) => {
-                    if (querySnapshot.empty) {
-                        dogListElement.innerHTML = '<li>No dogs found.</li>';
-                    } else {
-                        let dogItems = '';
-                        querySnapshot.forEach((doc) => {
-                            const dogData = doc.data();
-                            const dogId = doc.id;
-                            const titles = dogData.Title ? dogData.Title.join(', ') : 'None';
-                            const birthdate = dogData.Birthdate ? new Date(dogData.Birthdate.seconds * 1000).toLocaleDateString() : 'N/A';
-                            const retiredStatus = dogData.Retired ? 'Yes' : 'No';
+ function fetchUserDogs(ownerId) {
+     dogListElement.innerHTML = '<li>Loading dogs...</li>';
+     errorMessageElement.style.display = 'none';
+     selectedDogId = null; // Reset selection
+     editSelectedDogButton.style.display = 'none';
+     detailsContentDiv.innerHTML = '<p>Select a dog from the list to view details.</p>';
+     dogDetailsDiv.style.display = 'block'; // Ensure details are visible
+     editDogButtonBelowDetails.style.display = 'none'; // Hide the old edit button
 
-                            dogItems += `
-                                <li>
-                                    <div class="dog-info">
-                                        <strong>Call Name:</strong> ${dogData.DogCallName || 'N/A'}<br>
-                                        <strong>Registered Name:</strong> ${dogData.DogRegName || 'N/A'}<br>
-                                        <strong>Birthdate:</strong> ${birthdate}<br>
-                                        <strong>AKC Reg. #:</strong> ${dogData.AKCRegNum || 'N/A'}<br>
-                                        <strong>Retired:</strong> ${retiredStatus}<br>
-                                        <strong>Sex:</strong> ${dogData.Sex || 'N/A'}<br>
-                                        <strong>Titles:</strong> ${titles}
-                                    </div>
-                                    <div class="dog-actions">
-                                        <button onclick="editDog('${dogId}')">Edit</button>
-                                    </div>
-                                </li>
-                            `;
-                        });
-                        dogListElement.innerHTML = dogItems;
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching dogs:', error);
-                    errorMessageElement.textContent = 'Failed to load your dogs.';
-                    errorMessageElement.style.display = 'block';
-                    dogListElement.innerHTML = '';
-                });
-        }
+     db.collection('Dog')
+         .where('OwnerID', '==', ownerId)
+         .orderBy('DogCallName') // Optional: Order by call name
+         .get()
+         .then((querySnapshot) => {
+             if (querySnapshot.empty) {
+                 dogListElement.innerHTML = '<li>No dogs found.</li>';
+             } else {
+                 let dogItems = '';
+                 querySnapshot.forEach((doc) => {
+                     const dogData = doc.data();
+                     const dogId = doc.id;
+                     dogItems += `<li onclick="selectDog('<span class="math-inline">\{dogId\}'\)"\></span>{dogData.DogCallName || 'N/A'}</li>`;
+                 });
+                 dogListElement.innerHTML = dogItems;
+             }
+         })
+         .catch((error) => {
+             console.error('Error fetching dogs:', error);
+             errorMessageElement.textContent = 'Failed to load your dogs.';
+             errorMessageElement.style.display = 'block';
+             dogListElement.innerHTML = '';
+         });
+ }
+
+ function selectDog(dogId) {
+     selectedDogId = dogId;
+     // Remove 'selected' class from all list items
+     document.querySelectorAll('#dog-list li').forEach(li => li.classList.remove('selected'));
+     // Add 'selected' class to the clicked list item
+     const selectedLi = Array.from(dogListElement.children).find(li => li.textContent === (db.collection('Dog').doc(dogId)._delegate._path.segments[1] ? db.collection('Dog').doc(dogId)._delegate._path.segments[1] : 'N/A')); // More robust way to find the selected LI
+     if (selectedLi) {
+         selectedLi.classList.add('selected');
+     }
+     editSelectedDogButton.style.display = 'inline-block';
+     fetchDogDetails(dogId); // If you still want to display details below
+ }
 
         function editDog(dogId) {
             // Redirect to an edit dog page, passing the dog ID
             window.location.href = `edit_dog.html?id=${dogId}`; // You'll need to create this page
+             editSelectedDogButton.addEventListener('click', () => {
+     if (selectedDogId) {
+         window.location.href = `edit_dog.html?id=${selectedDogId}`;
+     } else {
+         alert('Please select a dog from the list first.');
+     }
+ });
         }
     </script>
 </body>
