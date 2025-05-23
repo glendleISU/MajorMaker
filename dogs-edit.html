@@ -249,7 +249,7 @@
         // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const dogsCollection = db.collection('Dog');
+        const dogsCollection = db.collection('Dog'); // Reference to the 'Dog' collection
         const breedsCollection = db.collection('Breeds'); // Reference to the 'Breeds' collection
 
         let editingDogId = null;
@@ -267,7 +267,13 @@
         const championInput = document.getElementById('champion');
         const retiredInput = document.getElementById('retired');
         const birthdateInput = document.getElementById('birthdate');
-        const UserID=(user.uid)
+
+        let currentUser;
+
+        function getCurrentUser() {
+        const auth = firebase.auth(); // Using compat SDK
+        return auth.currentUser;
+    }
         
         function displayStatusMessage(message, type) {
             statusMessageDiv.textContent = message;
@@ -369,7 +375,18 @@
                 birthdateFirestore = new Date(utcMilliseconds);
             }
 
+            currentUser = getCurrentUser();
+            let ownerId = null;
+
+            if (currentUser) {
+                ownerId = currentUser.uid;
+            } else {
+                displayStatusMessage('User not authenticated. Cannot add dog.', 'error');
+                return; // Stop the submission if no user is logged in
+            }
+            
             const newDogData = {
+                OwnerID: ownerID,
                 DogCallName: callname,
                 DogRegName: regname,
                 AKCRegNum: akcRegNum,
@@ -378,7 +395,6 @@
                 Champion: champion,
                 Retired: retired,
                 Birthdate: birthdateFirestore,
-                OwnerID: UserID,
             };
 
              try {
@@ -391,7 +407,6 @@
             // Adding a new dog
             await dogsCollection.add(newDogData);
             displayStatusMessage('New dog added successfully!', 'success');
-            // Optionally redirect to the dogs list or clear the form after adding
             editDogForm.reset(); // Clear the form
         }
         setTimeout(() => {
@@ -407,7 +422,8 @@
             const urlParams = new URLSearchParams(window.location.search);
             const dogIdFromUrl = urlParams.get('id');
 
-             populateBreedDropdown(); // Load the breeds when the page loads
+            currentUser = getCurrentUser(); // Get the current user on load 
+            populateBreedDropdown(); // Load the breeds when the page loads
 
             if (dogIdFromUrl) {
                 editingDogId = dogIdFromUrl;
