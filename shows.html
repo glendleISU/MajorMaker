@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upcoming Shows - Major Maker</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #shows-list {
+            list-style: none;
+            padding: 0;
+        }
+        #shows-list li {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #shows-list li strong {
+            font-weight: bold;
+        }
+        .show-details {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        #loading-message {
+            text-align: center;
+            font-style: italic;
+            color: #777;
+        }
+        #error-message {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="./firebase-config.js"></script> </head>
+<body>
+    <h1>Upcoming Shows</h1>
+    <div id="loading-message">Loading shows...</div>
+    <ul id="shows-list">
+        </ul>
+    <div id="error-message" style="display: none;"></div>
+
+    <script>
+        // Initialize Firebase (assuming config is in firebase-config.js)
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const showsCollection = db.collection('Shows');
+        const showsListElement = document.getElementById('shows-list');
+        const loadingMessageElement = document.getElementById('loading-message');
+        const errorMessageElement = document.getElementById('error-message');
+
+        async function displayUpcomingShows() {
+            try {
+                const snapshot = await showsCollection
+                    .orderBy('ShowDate') // Order by show date (optional, but useful)
+                    .get();
+
+                if (snapshot.empty) {
+                    loadingMessageElement.textContent = 'No upcoming shows found.';
+                    return;
+                }
+
+                loadingMessageElement.style.display = 'none';
+                showsListElement.innerHTML = ''; // Clear any previous content
+
+                snapshot.forEach(doc => {
+                    const showData = doc.data();
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <strong>${showData.ShowName}</strong>
+                        <div class="show-details">
+                            Date: ${formatDate(showData.ShowDate)}<br>
+                            City: ${showData.ShowCity}, ${showData.ShowState}<br>
+                            Registration Closes: ${formatDate(showData.CloseDate)}
+                        </div>
+                    `;
+                    showsListElement.appendChild(listItem);
+                });
+
+            } catch (error) {
+                console.error("Error fetching shows:", error);
+                loadingMessageElement.style.display = 'none';
+                errorMessageElement.textContent = `Failed to load shows: ${error.message}`;
+                errorMessageElement.style.display = 'block';
+            }
+        }
+
+        function formatDate(date) {
+            if (date && date.toDate) {
+                const jsDate = date.toDate();
+                const year = jsDate.getFullYear();
+                const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+                const day = String(jsDate.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            } else if (typeof date === 'string') {
+                return date;
+            }
+            return 'N/A';
+        }
+
+        // Call the function to display shows when the page loads
+        displayUpcomingShows();
+    </script>
+</body>
+</html>
