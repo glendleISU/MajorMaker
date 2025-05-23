@@ -162,7 +162,7 @@
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUserID = user.uid;
-                fetchAllDogs();
+                fetchDogsAndEntries();
             } else {
                 currentUserID = null;
                 // Handle cases where the user is not logged in (e.g., display a message)
