@@ -166,8 +166,10 @@
         const showsCollection = db.collection('Shows');
         const dogsCollection = db.collection('Dog');
         const showEntriesCollection =db.collection('ShowEntries');
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentShowId = urlParams.get('id');
 
-        let currentShowId = null;
+        <!-- let currentShowId = null; -->
         let currentUserID = null;
         let allDogsData = []; // Store all dog data
         let showEntryStatuses = {}; // Object to store the selected status for each dog
