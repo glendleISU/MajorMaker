@@ -287,28 +287,27 @@
         }
 
         async function createNewShow() {
+            let showDateToSave;
+            let closeDateToSave;
+        
             if (newShowData) {
-                try {
-                    await showsCollection.add(newShowData);
-                    alert('New show created successfully!');
-                    clearForm();
-                    closeModal();
-                    newShowData = null; // Reset
-                } catch (error) {
-                    console.error("Error creating new show:", error);
-                    alert('Failed to create new show. Please try again.');
-                }
+                showDateToSave = newShowData.ShowDate;
+                closeDateToSave = newShowData.CloseDate;
             } else {
-                // If no duplicate was found, create directly
                 const showDate = new Date(showDateInput.value);
                 const closeDate = new Date(closeDateInput.value);
-                const newShow = {
-                    ShowName: showNameInput.value,
-                    ShowCity: showCityInput.value,
-                    ShowState: showStateInput.value,
-                    ShowDate: new firebase.firestore.Timestamp.fromDate(showDate),
-                    CloseDate: new firebase.firestore.Timestamp.fromDate(closeDate)
+                showDateToSave = firebase.firestore.Timestamp.fromDate(showDate);
+                closeDateToSave = firebase.firestore.Timestamp.fromDate(closeDate);
+            }
+        
+            const newShow = {
+                ShowName: showNameInput.value,
+                ShowCity: showCityInput.value,
+                ShowState: showStateInput.value,
+                ShowDate: showDateToSave,
+                CloseDate: closeDateToSave
                 };
+            
                 try {
                     await showsCollection.add(newShow);
                     alert('New show created successfully!');
