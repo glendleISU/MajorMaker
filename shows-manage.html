@@ -160,7 +160,6 @@
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUserID = user.uid;
-                // Re-fetch the dogs now that we have the user ID
                 fetchAllDogs();
             } else {
                 currentUserID = null;
@@ -195,9 +194,6 @@
 
                     loadingMessageElement.style.display = 'none';
                     showDetailsElement.style.display = 'block';
-
-                    // Now fetch the list of all dogs
-                    fetchAllDogs();
 
                 } else {
                     loadingMessageElement.style.display = 'none';
