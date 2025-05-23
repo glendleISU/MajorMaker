@@ -151,11 +151,13 @@
         const db = firebase.firestore();
         const showsCollection = db.collection('Shows');
         const dogsCollection = db.collection('Dog');
+        const showEntriesCollection =db.collection('ShowEntries');
 
         let currentShowId = null;
         let currentUserID = null;
         let allDogsData = []; // Store all dog data
         let showEntryStatuses = {}; // Object to store the selected status for each dog
+        let existingShowEntries = {}; // Object to store existing show entries
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -182,10 +184,10 @@
             }
 
             try {
-                const doc = await showsCollection.doc(currentShowId).get();
+                const showDoc = await showsCollection.doc(currentShowId).get();
 
-                if (doc.exists) {
-                    const showData = doc.data();
+                if (showDoc.exists) {
+                    const showData = showDoc.data();
                     showNameElement.textContent = showData.ShowName || 'N/A';
                     showDateElement.textContent = formatDate(showData.ShowDate) || 'N/A';
                     showCityElement.textContent = showData.ShowCity || 'N/A';
@@ -211,35 +213,37 @@
             }
         }
 
-        async function fetchAllDogs() {
-            try {
-                if (!currentUserID) {
-                    console.warn("Current user ID is not available. Displaying all non-retired dogs.");
-                    const snapshot = await dogsCollection
-                        .where('Retired', '!=', true) // Filter out retired dogs
-                        .get();
-                    allDogsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    displayDogList();
-                    loadingDogsMessageElement.style.display = 'none';
-                    return;
-                }
-        
-                const snapshot = await dogsCollection
-                    .where('OwnerID', '==', currentUserID) // Filter by owner ID
-                    .where('Retired', '!=', true)       // Filter out retired dogs
-                    .get();
-        
-                allDogsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                displayDogList();
-                loadingDogsMessageElement.style.display = 'none';
-        
-            } catch (error) {
-                console.error("Error fetching dogs:", error);
-                loadingDogsMessageElement.style.display = 'none';
-                errorDogsMessageElement.textContent = `Failed to load your dogs: ${error.message}`;
-                errorDogsMessageElement.style.display = 'block';
-            }
-        }
+        async function fetchDogsAndEntries() {
+            try {
+                let dogsQuery = dogsCollection.where('Retired', '!=', true);
+                if (currentUserID) {
+                    dogsQuery = dogsQuery.where('OwnerID', '==', currentUserID);
+                }
+
+                const dogsSnapshot = await dogsQuery.get();
+                allDogsData = dogsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Fetch existing show entries for these dogs and the current show
+                const entriesSnapshot = await showEntriesCollection
+                    .where('DogID', 'in', allDogsData.map(dog => dog.id))
+                    .where('ShowID', '==', currentShowId)
+                    .get();
+
+                existingShowEntries = {};
+                entriesSnapshot.forEach(doc => {
+                    existingShowEntries[doc.data().DogID] = doc.data().InterestLevel;
+                });
+
+                displayDogList();
+                loadingDogsMessageElement.style.display = 'none';
+
+            } catch (error) {
+                console.error("Error fetching dogs and entries:", error);
+                loadingDogsMessageElement.style.display = 'none';
+                errorDogsMessageElement.textContent = `Failed to load your dogs and entries: ${error.message}`;
+                errorDogsMessageElement.style.display = 'block';
+            }
+        }
 
         function displayDogList() {
             dogsInShowListElement.innerHTML = '';
@@ -251,15 +255,17 @@
                 const statusDropdown = document.createElement('select');
                 statusDropdown.dataset.dogId = dog.id; // Store dog ID in the dropdown
                 const options = ["N/A", "Interested", "Going", "Entered"];
-                options.forEach(optionValue => {
+                const interestLevel = existingShowEntries[dog.id] !== undefined ? existingShowEntries[dog.id] : 0; // Default to N/A (0) if no entry
+                
+                options.forEach((optionValue, index) => {
                     const option = document.createElement('option');
                     option.value = optionValue;
                     option.textContent = optionValue;
-                    option.selected = (showEntryStatuses[dog.id] === optionValue || optionValue === "N/A"); // Default to N/A
+                    option.selected = (interestLevel === index); // Select based on numerical index
                     statusDropdown.appendChild(option);
                 });
                 statusDropdown.addEventListener('change', (event) => {
-                    showEntryStatuses[event.target.dataset.dogId] = event.target.value;
+                    const selectedText = event.target.value;
                 });
 
                 listItem.appendChild(dogNameSpan);
@@ -286,16 +292,64 @@
                 alert('Error: No show ID to save entries for.');
                 return;
             }
-
-            try {
-                await showsCollection.doc(currentShowId).update({
-                    DogsEntered: showEntryStatuses // Save the object of dog IDs and their statuses
-                });
-                alert('Show entry statuses saved successfully!');
-            } catch (error) {
-                console.error("Error saving show entries:", error);
-                alert(`Error saving show entries: ${error.message}`);
+        
+            const showEntriesCollection = db.collection('ShowEntries');
+        
+            // Iterate through the displayed dogs and their selected statuses
+            for (const dogId in showEntryStatuses) {
+                const interestLevelText = showEntryStatuses[dogId];
+                let interestLevel = 0; // Default to N/A
+        
+                switch (interestLevelText) {
+                    case "Interested":
+                        interestLevel = 1;
+                        break;
+                    case "Going":
+                        interestLevel = 2;
+                        break;
+                    case "Entered":
+                        interestLevel = 3;
+                        break;
+                    case "N/A":
+                    default:
+                        interestLevel = 0;
+                        break;
+                }
+        
+                const showEntryDocRef = showEntriesCollection
+                    .where('DogID', '==', dogId)
+                    .where('ShowID', '==', currentShowId)
+                    .limit(1);
+        
+                const existingEntrySnapshot = await showEntryDocRef.get();
+        
+                if (interestLevel > 0) {
+                    // If interest level is greater than N/A, create or update
+                    if (!existingEntrySnapshot.empty) {
+                        // Update existing document
+                        const existingDocId = existingEntrySnapshot.docs[0].id;
+                        await showEntriesCollection.doc(existingDocId).update({
+                            InterestLevel: interestLevel
+                        });
+                    } else {
+                        // Create a new document
+                        await showEntriesCollection.add({
+                            DogID: dogId,
+                            ShowID: currentShowId,
+                            InterestLevel: interestLevel
+                        });
+                    }
+                } else {
+                    // If interest level is N/A (0), delete existing entry if it exists
+                    if (!existingEntrySnapshot.empty) {
+                        const existingDocId = existingEntrySnapshot.docs[0].id;
+                        await showEntriesCollection.doc(existingDocId).delete();
+                    }
+                    // Do nothing if no entry exists for N/A
+                }
             }
+        
+            alert('Show entry statuses saved successfully!');
         }
 
         saveChangesButton.addEventListener('click', saveShowEntries);
