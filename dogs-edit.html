@@ -251,7 +251,6 @@
         const db = firebase.firestore();
         const dogsCollection = db.collection('Dog');
         const breedsCollection = db.collection('Breeds'); // Reference to the 'Breeds' collection
-        const UserID=(user.uid)
 
         let editingDogId = null;
         const editDogForm = document.getElementById('edit-dog-form');
@@ -268,7 +267,8 @@
         const championInput = document.getElementById('champion');
         const retiredInput = document.getElementById('retired');
         const birthdateInput = document.getElementById('birthdate');
-
+        const UserID=(user.uid)
+        
         function displayStatusMessage(message, type) {
             statusMessageDiv.textContent = message;
             statusMessageDiv.className = '';
