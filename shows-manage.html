@@ -31,15 +31,64 @@
             font-weight: bold;
             margin-right: 5px;
         }
-        #loading-message {
+        #loading-message, #loading-dogs-message {
             text-align: center;
             font-style: italic;
             color: #777;
         }
-        #error-message {
+        #error-message, #error-dogs-message {
             color: red;
             text-align: center;
             margin-top: 20px;
+        }
+        #dogs-in-show-section {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #dogs-in-show-list {
+            list-style: none;
+            padding: 0;
+        }
+        #dogs-in-show-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        #dogs-in-show-list li:last-child {
+            border-bottom: none;
+        }
+        #dogs-in-show-list span {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        #dogs-in-show-list select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        #save-changes-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #28a745; /* Green save button */
+            color: white;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            display: block;
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #save-changes-button:hover {
+            background-color: #1e7e34;
         }
     </style>
 
@@ -58,6 +107,16 @@
         </div>
     <div id="error-message" style="display: none;"></div>
 
+    <div id="dogs-in-show-section">
+        <h2>Dogs Entered in This Show</h2>
+        <div id="loading-dogs-message">Loading dogs...</div>
+        <ul id="dogs-in-show-list">
+            </ul>
+        <div id="error-dogs-message" style="display: none;"></div>
+    </div>
+
+    <button id="save-changes-button">Save Changes</button>
+
     <script>
         const loadingMessageElement = document.getElementById('loading-message');
         const showDetailsElement = document.getElementById('show-details');
@@ -67,6 +126,12 @@
         const showCityElement = document.getElementById('show-city');
         const showStateElement = document.getElementById('show-state');
         const closeDateElement = document.getElementById('close-date');
+
+        const dogsInShowSection = document.getElementById('dogs-in-show-section');
+        const loadingDogsMessageElement = document.getElementById('loading-dogs-message');
+        const dogsInShowListElement = document.getElementById('dogs-in-show-list');
+        const errorDogsMessageElement = document.getElementById('error-dogs-message');
+        const saveChangesButton = document.getElementById('save-changes-button');
 
         // Initialize Firebase
         const firebaseConfig = {
@@ -83,12 +148,17 @@
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const showsCollection = db.collection('Shows');
+        const dogsCollection = db.collection('Dog');
+
+        let currentShowId = null;
+        let allDogsData = []; // Store all dog data
+        let showEntryStatuses = {}; // Object to store the selected status for each dog
 
         async function fetchShowDetails() {
             const urlParams = new URLSearchParams(window.location.search);
             const showId = urlParams.get('id');
 
-            if (!showId) {
+            if (!currentShowId) {
                 loadingMessageElement.style.display = 'none';
                 errorMessageElement.textContent = 'Error: No show ID provided.';
                 errorMessageElement.style.display = 'block';
@@ -96,7 +166,7 @@
             }
 
             try {
-                const doc = await showsCollection.doc(showId).get();
+                const doc = await showsCollection.doc(currentShowId).get();
 
                 if (doc.exists) {
                     const showData = doc.data();
@@ -108,10 +178,15 @@
 
                     loadingMessageElement.style.display = 'none';
                     showDetailsElement.style.display = 'block';
+
+                    // Now fetch the list of all dogs
+                    fetchAllDogs();
+
                 } else {
                     loadingMessageElement.style.display = 'none';
-                    errorMessageElement.textContent = `Error: Show with ID "${showId}" not found.`;
+                    errorMessageElement.textContent = `Error: Show with ID "${currentShowId}" not found.`;
                     errorMessageElement.style.display = 'block';
+                    loadingDogsMessageElement.style.display = 'none'; // Hide dog loading message as well
                 }
 
             } catch (error) {
@@ -119,7 +194,49 @@
                 loadingMessageElement.style.display = 'none';
                 errorMessageElement.textContent = `Failed to load show details: ${error.message}`;
                 errorMessageElement.style.display = 'block';
+                loadingDogsMessageElement.style.display = 'none'; // Hide dog loading message on error
             }
+        }
+
+        async function fetchAllDogs() {
+            try {
+                const snapshot = await dogsCollection.get();
+                allDogsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                displayDogList();
+                loadingDogsMessageElement.style.display = 'none';
+            } catch (error) {
+                console.error("Error fetching dogs:", error);
+                loadingDogsMessageElement.style.display = 'none';
+                errorDogsMessageElement.textContent = `Failed to load dogs: ${error.message}`;
+                errorDogsMessageElement.style.display = 'block';
+            }
+        }
+
+        function displayDogList() {
+            dogsInShowListElement.innerHTML = '';
+            allDogsData.forEach(dog => {
+                const listItem = document.createElement('li');
+                const dogNameSpan = document.createElement('span');
+                dogNameSpan.textContent = dog.DogRegName || 'N/A';
+
+                const statusDropdown = document.createElement('select');
+                statusDropdown.dataset.dogId = dog.id; // Store dog ID in the dropdown
+                const options = ["N/A", "Interested", "Going", "Entered"];
+                options.forEach(optionValue => {
+                    const option = document.createElement('option');
+                    option.value = optionValue;
+                    option.textContent = optionValue;
+                    option.selected = (showEntryStatuses[dog.id] === optionValue || optionValue === "N/A"); // Default to N/A
+                    statusDropdown.appendChild(option);
+                });
+                statusDropdown.addEventListener('change', (event) => {
+                    showEntryStatuses[event.target.dataset.dogId] = event.target.value;
+                });
+
+                listItem.appendChild(dogNameSpan);
+                listItem.appendChild(statusDropdown);
+                dogsInShowListElement.appendChild(listItem);
+            });
         }
 
         function formatDate(date) {
@@ -135,7 +252,26 @@
             return 'N/A';
         }
 
-        // Fetch show details when the page loads
+        async function saveShowEntries() {
+            if (!currentShowId) {
+                alert('Error: No show ID to save entries for.');
+                return;
+            }
+
+            try {
+                await showsCollection.doc(currentShowId).update({
+                    DogsEntered: showEntryStatuses // Save the object of dog IDs and their statuses
+                });
+                alert('Show entry statuses saved successfully!');
+            } catch (error) {
+                console.error("Error saving show entries:", error);
+                alert(`Error saving show entries: ${error.message}`);
+            }
+        }
+
+        saveChangesButton.addEventListener('click', saveShowEntries);
+
+        // Fetch show details and then all dogs when the page loads
         fetchShowDetails();
     </script>
 </body>
