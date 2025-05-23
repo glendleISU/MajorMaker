@@ -16,6 +16,49 @@
             text-align: center;
             margin-bottom: 20px;
         }
+        .top-navigation {
+            margin-bottom: 15px;
+        }
+        .top-navigation button {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            cursor: pointer;
+            background-color: #6c757d; /* Gray button */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .top-navigation button:hover {
+            background-color: #545b62;
+        }
+        #filter-container {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        #filter-container label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        #filter-container select[multiple] {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 200px;
+            height: 150px; /* Adjust as needed */
+        }
+        #filter-container input[type="date"] {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
         #shows-list {
             list-style: none;
             padding: 0;
@@ -51,7 +94,7 @@
         #shows-list li .manage-button:hover {
             background-color: #0056b3;
         }
-        
+
         #loading-message {
             text-align: center;
             font-style: italic;
@@ -62,21 +105,65 @@
             text-align: center;
             margin-top: 20px;
         }
+        .filter-actions {
+            margin-top: 10px;
+        }
+        .filter-actions button {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            cursor: pointer;
+            background-color: #28a745; /* Green apply button */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-right: 5px;
+        }
+        .filter-actions button:hover {
+            background-color: #1e7e34;
+        }
+        .filter-actions button[type="button"] {
+            background-color: #dc3545; /* Red clear button */
+        }
+        .filter-actions button[type="button"]:hover {
+            background-color: #c82333;
+        }
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <!-- <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-config.js"></script> --> </head>
+</head>
 <body>
     <h1>Upcoming Shows</h1>
+
+    <div class="top-navigation">
+        <button onclick="window.location.href='index.html'">Back to Home</button>
+    </div>
+
+    <div id="filter-container">
+        <div>
+            <label for="state-filter">Filter by State:</label>
+            <select id="state-filter" multiple>
+                </select>
+        </div>
+        <div>
+            <label for="start-date-filter">Filter by Date:</label>
+            <input type="date" id="start-date-filter">
+            <label for="end-date-filter">to</label>
+            <input type="date" id="end-date-filter">
+        </div>
+        <div class="filter-actions">
+            <button onclick="applyFilters()">Apply Filters</button>
+            <button type="button" onclick="clearFilters()">Clear Filters</button>
+        </div>
+    </div>
+
     <div id="loading-message">Loading shows...</div>
     <ul id="shows-list">
-        </ul>
+    </ul>
     <div id="error-message" style="display: none;"></div>
 
     <script>
-        // Initialize Firebase (assuming config is in firebase-config.js)
-
         const firebaseConfig = {
             apiKey: "AIzaSyDudaFY9ZkQthsOPkn5MKCWUV4GdJ__YEI",
             authDomain: "major-maker-580e8.firebaseapp.com",
@@ -87,71 +174,136 @@
             appId: "1:342221542780:web:057da75b81136edd4a40f9",
             measurementId: "G-LGWRJMMMSS"
         };
-        
+
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const showsCollection = db.collection('Shows');
         const showsListElement = document.getElementById('shows-list');
         const loadingMessageElement = document.getElementById('loading-message');
         const errorMessageElement = document.getElementById('error-message');
+        const stateFilterElement = document.getElementById('state-filter');
+        const startDateFilterElement = document.getElementById('start-date-filter');
+        const endDateFilterElement = document.getElementById('end-date-filter');
 
-        async function displayUpcomingShows() {
-    try {
-        const snapshot = await showsCollection
-            .orderBy('ShowDate')
-            .get();
+        const usStates = [
+            "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+            "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+            "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+        ];
 
-        if (snapshot.empty) {
-            loadingMessageElement.textContent = 'No upcoming shows found.';
-            return;
+        function populateStateFilter() {
+            usStates.forEach(state => {
+                const option = document.createElement('option');
+                option.value = state;
+                option.textContent = state;
+                stateFilterElement.appendChild(option);
+            });
         }
 
-        loadingMessageElement.style.display = 'none';
-        showsListElement.innerHTML = '';
+        async function displayUpcomingShows(filters = {}) {
+            loadingMessageElement.style.display = 'block';
+            showsListElement.innerHTML = '';
+            errorMessageElement.style.display = 'none';
 
-        snapshot.forEach(doc => {
-            const showData = doc.data();
-            const showId = doc.id; // Get the document ID
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `
-                <strong>${showData.ShowName}</strong>
-                <div class="show-details">
-                    Date: ${formatDate(showData.ShowDate)}<br>
-                    City: ${showData.ShowCity}, ${showData.ShowState}<br>
-                    Registration Closes: ${formatDate(showData.CloseDate)}
-                </div>
-                <button class="manage-button" onclick="navigateToManage('${showId}')">Manage</button>
-            `;
-            showsListElement.appendChild(listItem);
-        });
+            let query = showsCollection.orderBy('ShowDate');
 
-    } catch (error) {
-        console.error("Error fetching shows:", error);
-        loadingMessageElement.style.display = 'none';
-        errorMessageElement.textContent = `Failed to load shows: ${error.message}`;
-        errorMessageElement.style.display = 'block';
-    }
-}
+            if (filters.states && filters.states.length > 0) {
+                query = query.where('ShowState', 'in', filters.states);
+            }
 
-function navigateToManage(showId) {
-    window.location.href = `shows-manage.html?id=${showId}`;
-}
+            if (filters.startDate) {
+                const start = new Date(filters.startDate);
+                query = query.where('ShowDate', '>=', start);
+            }
 
-function formatDate(date) {
-    if (date && date.toDate) {
-        const jsDate = date.toDate();
-        const year = jsDate.getFullYear();
-        const month = String(jsDate.getMonth() + 1).padStart(2, '0');
-        const day = String(jsDate.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    } else if (typeof date === 'string') {
-        return date;
-    }
-    return 'N/A';
-}
+            if (filters.endDate) {
+                const end = new Date(filters.endDate);
+                // To include the end date, we query for dates strictly less than the day after
+                const endDatePlusOne = new Date(end);
+                endDatePlusOne.setDate(endDatePlusOne.getDate() + 1);
+                query = query.where('ShowDate', '<', endDatePlusOne);
+            }
 
-// Call the function to display shows when the page loads
-displayUpcomingShows();
+            try {
+                const snapshot = await query.get();
+
+                if (snapshot.empty) {
+                    loadingMessageElement.textContent = 'No shows found matching your filters.';
+                    return;
+                }
+
+                loadingMessageElement.style.display = 'none';
+
+                snapshot.forEach(doc => {
+                    const showData = doc.data();
+                    const showId = doc.id;
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <strong>${showData.ShowName}</strong>
+                        <div class="show-details">
+                            Date: ${formatDate(showData.ShowDate)}<br>
+                            City: ${showData.ShowCity}, ${showData.ShowState}<br>
+                            Registration Closes: ${formatDate(showData.CloseDate)}
+                        </div>
+                        <button class="manage-button" onclick="navigateToManage('${showId}')">Manage</button>
+                    `;
+                    showsListElement.appendChild(listItem);
+                });
+
+            } catch (error) {
+                console.error("Error fetching shows:", error);
+                loadingMessageElement.style.display = 'none';
+                errorMessageElement.textContent = `Failed to load shows: ${error.message}`;
+                errorMessageElement.style.display = 'block';
+            }
+        }
+
+        function applyFilters() {
+            const selectedStates = Array.from(stateFilterElement.selectedOptions).map(option => option.value);
+            const startDate = startDateFilterElement.value;
+            const endDate = endDateFilterElement.value;
+
+            const filters = {};
+            if (selectedStates.length > 0) {
+                filters.states = selectedStates;
+            }
+            if (startDate) {
+                filters.startDate = startDate;
+            }
+            if (endDate) {
+                filters.endDate = endDate;
+            }
+
+            displayUpcomingShows(filters);
+        }
+
+        function clearFilters() {
+            stateFilterElement.value = []; // Clear multiselect
+            startDateFilterElement.value = '';
+            endDateFilterElement.value = '';
+            displayUpcomingShows(); // Reload all shows
+        }
+
+        function navigateToManage(showId) {
+            window.location.href = `shows-manage.html?id=${showId}`;
+        }
+
+        function formatDate(date) {
+            if (date && date.toDate) {
+                const jsDate = date.toDate();
+                const year = jsDate.getFullYear();
+                const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+                const day = String(jsDate.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            } else if (typeof date === 'string') {
+                return date;
+            }
+            return 'N/A';
+        }
+
+        // Call functions on page load
+        populateStateFilter();
+        displayUpcomingShows();
     </script>
 </body>
 </html>
