@@ -170,7 +170,7 @@
             <input type="date" id="close-date" required>
         </div>
         <div class="form-actions">
-            <button class="submit-button" onclick="checkAndCreateShow()">Create Show</button>
+            <button class="submit-button" onclick=createNewShow()">Create Show</button>
             <button class="cancel-button" onclick="clearForm()">Cancel</button>
         </div>
     </div>
@@ -317,7 +317,6 @@
                     alert('Failed to create new show. Please try again.');
                 }
             }
-        }
 
         function closeModal() {
             duplicateModal.style.display = 'none';
