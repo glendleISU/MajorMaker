@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Profile - Major Maker</title>
+    <link rel="stylesheet" href="navigation.css">
     <style>
         body {
             font-family: sans-serif;
@@ -86,18 +87,11 @@
     </style>
 </head>
 <body>
-    <div class="navigation-header">
-      <button onclick="window.location.href='index.html'">Home</button>
-      <button onclick="window.location.href='shows.html'">Shows</button>
-      <div class="dropdown">
-        <button class="dropdown-button">Settings</button>
-        <div class="dropdown-content">
-          <a href="profile.html">Profile</a>
-          <a href="dogs.html">Dogs</a>
-        </div>
-      </div>
-    </div>
-    
+    fetch('navigation.html')
+        .then(response => response.text())
+        .then(data => {
+          document.body.insertAdjacentHTML('afterbegin', data);
+    });
     <div class="profile-container" id="profile-display" style="display: none;">
         <h2>Your Profile</h2>
         <div id="profile-data">
