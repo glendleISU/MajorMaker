@@ -93,6 +93,7 @@
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
@@ -146,13 +147,29 @@
         };
         
         const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.firestore();
         const showsCollection = db.collection('Shows');
         const dogsCollection = db.collection('Dog');
 
         let currentShowId = null;
+        let currentUserID = null;
         let allDogsData = []; // Store all dog data
         let showEntryStatuses = {}; // Object to store the selected status for each dog
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUserID = user.uid;
+                // Re-fetch the dogs now that we have the user ID
+                fetchAllDogs();
+            } else {
+                currentUserID = null;
+                // Handle cases where the user is not logged in (e.g., display a message)
+                console.log("User is not logged in.");
+                // You might want to fetch all non-retired dogs in this case or display a different UI.
+                fetchAllDogs(); // Keeping this for the fallback scenario in fetchAllDogs
+            }
+        });
 
         async function fetchShowDetails() {
             const urlParams = new URLSearchParams(window.location.search);
