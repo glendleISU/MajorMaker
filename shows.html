@@ -80,56 +80,62 @@
         const errorMessageElement = document.getElementById('error-message');
 
         async function displayUpcomingShows() {
-            try {
-                const snapshot = await showsCollection
-                    .orderBy('ShowDate') // Order by show date (optional, but useful)
-                    .get();
+    try {
+        const snapshot = await showsCollection
+            .orderBy('ShowDate')
+            .get();
 
-                if (snapshot.empty) {
-                    loadingMessageElement.textContent = 'No upcoming shows found.';
-                    return;
-                }
-
-                loadingMessageElement.style.display = 'none';
-                showsListElement.innerHTML = ''; // Clear any previous content
-
-                snapshot.forEach(doc => {
-                    const showData = doc.data();
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `
-                        <strong>${showData.ShowName}</strong>
-                        <div class="show-details">
-                            Date: ${formatDate(showData.ShowDate)}<br>
-                            City: ${showData.ShowCity}, ${showData.ShowState}<br>
-                            Registration Closes: ${formatDate(showData.CloseDate)}
-                        </div>
-                    `;
-                    showsListElement.appendChild(listItem);
-                });
-
-            } catch (error) {
-                console.error("Error fetching shows:", error);
-                loadingMessageElement.style.display = 'none';
-                errorMessageElement.textContent = `Failed to load shows: ${error.message}`;
-                errorMessageElement.style.display = 'block';
-            }
+        if (snapshot.empty) {
+            loadingMessageElement.textContent = 'No upcoming shows found.';
+            return;
         }
 
-        function formatDate(date) {
-            if (date && date.toDate) {
-                const jsDate = date.toDate();
-                const year = jsDate.getFullYear();
-                const month = String(jsDate.getMonth() + 1).padStart(2, '0');
-                const day = String(jsDate.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
-            } else if (typeof date === 'string') {
-                return date;
-            }
-            return 'N/A';
-        }
+        loadingMessageElement.style.display = 'none';
+        showsListElement.innerHTML = '';
 
-        // Call the function to display shows when the page loads
-        displayUpcomingShows();
+        snapshot.forEach(doc => {
+            const showData = doc.data();
+            const showId = doc.id; // Get the document ID
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <strong>${showData.ShowName}</strong>
+                <div class="show-details">
+                    Date: ${formatDate(showData.ShowDate)}<br>
+                    City: ${showData.ShowCity}, ${showData.ShowState}<br>
+                    Registration Closes: ${formatDate(showData.CloseDate)}
+                </div>
+                <button class="manage-button" onclick="navigateToManage('${showId}')">Manage</button>
+            `;
+            showsListElement.appendChild(listItem);
+        });
+
+    } catch (error) {
+        console.error("Error fetching shows:", error);
+        loadingMessageElement.style.display = 'none';
+        errorMessageElement.textContent = `Failed to load shows: ${error.message}`;
+        errorMessageElement.style.display = 'block';
+    }
+}
+
+function navigateToManage(showId) {
+    window.location.href = `shows-manage.html?id=${showId}`;
+}
+
+function formatDate(date) {
+    if (date && date.toDate) {
+        const jsDate = date.toDate();
+        const year = jsDate.getFullYear();
+        const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+        const day = String(jsDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    } else if (typeof date === 'string') {
+        return date;
+    }
+    return 'N/A';
+}
+
+// Call the function to display shows when the page loads
+displayUpcomingShows();
     </script>
 </body>
 </html>
