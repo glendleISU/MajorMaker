@@ -156,7 +156,7 @@
 
         async function fetchShowDetails() {
             const urlParams = new URLSearchParams(window.location.search);
-            const showId = urlParams.get('id');
+            const currentShowId = urlParams.get('id');
 
             if (!currentShowId) {
                 loadingMessageElement.style.display = 'none';
