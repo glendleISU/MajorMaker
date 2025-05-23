@@ -228,6 +228,11 @@
             const twoWeeksAfter = new Date(showDate);
             twoWeeksAfter.setDate(showDate.getDate() + 14);
 
+            console.log("Checking for duplicates with:");
+            console.log("ShowName:", showName);
+            console.log("StartDate (twoWeeksBefore):", twoWeeksBefore);
+            console.log("EndDate (twoWeeksAfter):", twoWeeksAfter);
+
             try {
                 const snapshot = await showsCollection
                     .where('ShowName', '==', showName)
