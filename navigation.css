@@ -1,7 +1,7 @@
 .navigation-header {
   display: flex; /* Enable flexbox for easy centering */
   justify-content: center; /* Center the content horizontally */
-  background-color: #f0f0f0; /* Example background color */
+  background-color: #003594; /* Example background color */
   padding: 10px 0; /* Add some padding top and bottom */
 }
 
