@@ -87,11 +87,13 @@
     </style>
 </head>
 <body>
-    fetch('navigation.html')
-        .then(response => response.text())
-        .then(data => {
-          document.body.insertAdjacentHTML('afterbegin', data);
-    });
+    <script>
+        fetch('navigation.html')
+            .then(response => response.text())
+            .then(data => {
+              document.body.insertAdjacentHTML('afterbegin', data);
+        });
+    </script>
     <div class="profile-container" id="profile-display" style="display: none;">
         <h2>Your Profile</h2>
         <div id="profile-data">
