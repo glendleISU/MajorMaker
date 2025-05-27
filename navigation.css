@@ -3,6 +3,7 @@
   justify-content: center; /* Center the content horizontally */
   background-color: #003594; /* Example background color */
   padding: 10px 0; /* Add some padding top and bottom */
+  border-radius: 8px 8px 0px 0px
 }
 
 .navigation-header button {
