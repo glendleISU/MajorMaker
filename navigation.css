@@ -8,7 +8,7 @@
 
 .navigation-header button {
   padding: 8px 15px;
-  margin: 0 10px; /* Add spacing between buttons */
+  margin: 10px 1px 10px 1px; /* Add spacing between buttons */
   border: none;
   background-color: #ddd;
   cursor: pointer;
