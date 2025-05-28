@@ -108,10 +108,10 @@
         height: 100%;
     }
 </style>
-
+</head>
+    
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
 <script>
   // Your web app's Firebase configuration
@@ -130,7 +130,15 @@
   const app = firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 </script>
-</head>
+
+<script>
+    fetch('navigation.html')
+        .then(response => response.text())
+        .then(data => {
+            document.body.insertAdjacentHTML('afterbegin', data);
+    });
+</script>
+    
 <body>
     <h1>Major Maker</h1>
 
