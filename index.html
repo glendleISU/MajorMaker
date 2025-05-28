@@ -130,16 +130,15 @@
   const app = firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 </script>
-
-<script>
-    fetch('navigation.html')
-        .then(response => response.text())
-        .then(data => {
-            document.body.insertAdjacentHTML('afterbegin', data);
-    });
-</script>
     
 <body>
+    <script>
+        fetch('navigation.html')
+            .then(response => response.text())
+            .then(data => {
+                document.body.insertAdjacentHTML('afterbegin', data);
+            });
+    </script>
     <h1>Major Maker</h1>
 
     <div class="auth-container" id="signup-form">
