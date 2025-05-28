@@ -19,6 +19,8 @@
 
 .logo-container{
   float: left;
+  max-width: 60px;
+  max-height: auto
 }
 
 .navigation-header button {
