@@ -18,6 +18,9 @@
 }
 
 .logo-container{
+  position: absolute;
+  top: 10px;
+  left: 10 px;
   float: left;
   max-width: 60px;
   max-height: auto;
