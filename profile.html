@@ -91,7 +91,7 @@
         fetch('navigation.html')
             .then(response => response.text())
             .then(data => {
-              document.body.insertAdjacentHTML('afterbegin', data);
+              document.querySelector('.page-container').insertAdjacentHTML('afterbegin', data);
         });
     </script> -->
     <div class="page-container">
