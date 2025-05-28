@@ -13,11 +13,22 @@
   background-color: #ddd;
   cursor: pointer;
   font-size: 16px;
-  border-radius: 5px;
 }
 
 .navigation-header button:hover {
   background-color: #ccc;
+}
+
+.left-button {
+  border-radius: 5px 0 0 5px
+}
+
+.middle-button {
+  border-radius: 0
+}
+
+.right-button {
+  border-radius: 0 8px 8px 0
 }
 
 .dropdown {
