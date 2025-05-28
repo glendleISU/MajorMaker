@@ -24,6 +24,12 @@
   overflow: visible
 }
 
+.logo-container img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 .navigation-header button {
   padding: 8px 15px;
   margin: 10px 1px 10px 1px; /* Add spacing between buttons */
