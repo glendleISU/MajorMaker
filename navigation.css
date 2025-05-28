@@ -20,7 +20,8 @@
 .logo-container{
   float: left;
   max-width: 60px;
-  max-height: auto
+  max-height: auto;
+  overflow: visible
 }
 
 .navigation-header button {
