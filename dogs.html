@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="navigation.css">
     <title>Your Dogs - Major Maker</title>
     <style>
         body {
@@ -144,6 +145,14 @@
     </style>
 </head>
 <body>
+    <div class="page-container">
+        <script>
+            fetch('navigation.html')
+                .then(response => response.text())
+                .then(data => {
+                  document.querySelector('.page-container').insertAdjacentHTML('afterbegin', data);
+            });
+        </script>
     <div class="container">
         <h2>Your Dogs</h2>
         <div class="button-container">
@@ -205,6 +214,7 @@
         </div>
 
         <div id="error-message" class="error-message" style="display: none;"></div>
+    </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
