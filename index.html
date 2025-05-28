@@ -132,11 +132,12 @@
 </script>
     
 <body>
+    <div class="page.container">
     <script>
         fetch('navigation.html')
             .then(response => response.text())
             .then(data => {
-                document.body.insertAdjacentHTML('afterbegin', data);
+                document.querySelector('.page-container').insertAdjacentHTML('afterbegin', data);
             });
     </script>
     <h1>Major Maker</h1>
@@ -186,6 +187,7 @@
     <div class="button-container" id="main-buttons">
         <button id="findShowsBtn"><a href="shows.html" style="text-decoration: none; color: white;">Find shows</a></button>
         <button id="editAccountBtn"><a href="profile.html" style="text-decoration: none; color: white;">Edit account</a></button>
+    </div>
     </div>
 
     <script>
