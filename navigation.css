@@ -1,3 +1,11 @@
+.page-container {
+  display: flex;
+  justify-content: center;
+  border-radius: 12px;
+  padding: 4px;
+  flex-direction: column
+}
+
 .navigation-header {
   display: flex; /* Enable flexbox for easy centering */
   justify-content: center; /* Center the content horizontally */
