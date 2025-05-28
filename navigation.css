@@ -21,14 +21,14 @@
   padding: 8px 15px;
   margin: 10px 1px 10px 1px; /* Add spacing between buttons */
   border: none;
-  background-color: #ddd;
+  background-color: #6C3BAA;
   cursor: pointer;
   font-size: 16px;
   min-width: 100px;
 }
 
 .navigation-header button:hover {
-  background-color: #ccc;
+  background-color: #44236e;
 }
 
 .left-button {
