@@ -21,14 +21,15 @@
   padding: 8px 15px;
   margin: 10px 1px 10px 1px; /* Add spacing between buttons */
   border: none;
-  background-color: #6C3BAA;
+  color: #EFBF04; /* Gold */
+  background-color: #6C3BAA; /* Royal Purple */
   cursor: pointer;
   font-size: 16px;
   min-width: 100px;
 }
 
 .navigation-header button:hover {
-  background-color: #44236e;
+  background-color: #44236e; /* Darker Purple */
 }
 
 .left-button {
