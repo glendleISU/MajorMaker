@@ -4,7 +4,7 @@
   border-radius: 12px;
   padding: 4px;
   flex-direction: column;
-  background-color: #f4f4f4;
+  background-color: #8f60d3;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   min-width: 400px;
 }
@@ -12,7 +12,7 @@
 .navigation-header {
   display: flex; /* Enable flexbox for easy centering */
   justify-content: center; /* Center the content horizontally */
-  background-color: #003594; /* Example background color */
+  background-color: #6C3BAA; /* Royal Purple */
   padding: 0;
   border-radius: 8px 8px 0px 0px;
 }
