@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="navigation.css">
     <title>Manage Show - Major Maker</title>
     <style>
         body {
@@ -107,6 +109,14 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
+    <div class="page-container">
+        <script>
+            fetch('navigation.html')
+                .then(response => response.text())
+                .then(data => {
+                  document.querySelector('.page-container').insertAdjacentHTML('afterbegin', data);
+            });
+        </script>
     <h1>Manage Show</h1>
     <div id="loading-message">Loading show details...</div>
     <div id="show-details" style="display: none;">
@@ -129,6 +139,7 @@
     <div class="button-container">
         <button id="save-changes-button" class="button">Save Changes</button>
         <button id="back-to-shows-button" class="button">Back to Shows</button>
+    </div>
     </div>
 
     <script>
