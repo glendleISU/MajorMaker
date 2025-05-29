@@ -33,17 +33,18 @@
         }
         .detail-item {
             margin-bottom: 10px;
+            width: 100%;
         }
         .detail-item strong {
             font-weight: bold;
             margin-right: 5px;
         }
-        #loading-message, #loading-dogs-message {
+       #loading-message, #loading-dogs-message, #loading-breeds-message, #loading-potential-numbers {
             text-align: center;
             font-style: italic;
             color: #777;
         }
-        #error-message, #error-dogs-message {
+        #error-message, #error-dogs-message, #error-breeds-message, #error-potential-numbers {
             color: red;
             text-align: center;
             margin-top: 20px;
@@ -110,6 +111,36 @@
         #back-to-shows-button:hover {
             background-color: #0056b3;
         } -->
+        #potential-numbers-section {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #breed-filter-container {
+            margin-bottom: 15px;
+        }
+        #breed-filter {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+        #potential-numbers-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        #potential-numbers-table th, #potential-numbers-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        #potential-numbers-table th {
+            background-color: #f0f0f0;
+        }
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -145,6 +176,59 @@
                 </ul>
             <div id="error-dogs-message" style="display: none;"></div>
         </div>
+
+        <div id="potential-numbers-section">
+        <h2>Potential Numbers</h2>
+        <div id="loading-potential-numbers" style="display: block;">Loading breeds and potential numbers...</div>
+        <div id="error-potential-numbers" style="display: none;"></div>
+        <div id="breed-filter-container">
+            <label for="breed-filter">Filter by Breed:</label>
+            <select id="breed-filter">
+                <option value="">All Breeds</option>
+            </select>
+        </div>
+        <table id="potential-numbers-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Class dog</th>
+                    <th>Class bitch</th>
+                    <th>Special dog</th>
+                    <th>Special bitch</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Interested</th>
+                    <td id="interested-dog-class">0</td>
+                    <td id="interested-bitch-class">0</td>
+                    <td id="interested-dog-special">0</td>
+                    <td id="interested-bitch-special">0</td>
+                </tr>
+                <tr>
+                    <th>Going</th>
+                    <td id="going-dog-class">0</td>
+                    <td id="going-bitch-class">0</td>
+                    <td id="going-dog-special">0</td>
+                    <td id="going-bitch-special">0</td>
+                </tr>
+                <tr>
+                    <th>Entered</th>
+                    <td id="entered-dog-class">0</td>
+                    <td id="entered-bitch-class">0</td>
+                    <td id="entered-dog-special">0</td>
+                    <td id="entered-bitch-special">0</td>
+                </tr>
+                <tr>
+                    <th>Total</th>
+                    <td id="total-dog-class">0</td>
+                    <td id="total-bitch-class">0</td>
+                    <td id="total-dog-special">0</td>
+                    <td id="total-bitch-special">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     </div>
     </div>
 
@@ -165,6 +249,29 @@
         const saveChangesButton = document.getElementById('save-changes-button');
         const backToShowsButton = document.getElementById('back-to-shows-button');
 
+        // Potential Numbers Section Elements
+        const potentialNumbersSection = document.getElementById('potential-numbers-section');
+        const loadingPotentialNumbersElement = document.getElementById('loading-potential-numbers');
+        const errorPotentialNumbersElement = document.getElementById('error-potential-numbers');
+        const breedFilterDropdown = document.getElementById('breed-filter');
+        const potentialNumbersTable = document.getElementById('potential-numbers-table');
+        const interestedDogClassCell = document.getElementById('interested-dog-class');
+        const interestedBitchClassCell = document.getElementById('interested-bitch-class');
+        const interestedDogSpecialCell = document.getElementById('interested-dog-special');
+        const interestedBitchSpecialCell = document.getElementById('interested-bitch-special');
+        const goingDogClassCell = document.getElementById('going-dog-class');
+        const goingBitchClassCell = document.getElementById('going-bitch-class');
+        const goingDogSpecialCell = document.getElementById('going-dog-special');
+        const goingBitchSpecialCell = document.getElementById('going-bitch-special');
+        const enteredDogClassCell = document.getElementById('entered-dog-class');
+        const enteredBitchClassCell = document.getElementById('entered-bitch-class');
+        const enteredDogSpecialCell = document.getElementById('entered-dog-special');
+        const enteredBitchSpecialCell = document.getElementById('entered-bitch-special');
+        const totalDogClassCell = document.getElementById('total-dog-class');
+        const totalBitchClassCell = document.getElementById('total-bitch-class');
+        const totalDogSpecialCell = document.getElementById('total-dog-special');
+        const totalBitchSpecialCell = document.getElementById('total-bitch-special');
+        
         // Initialize Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDudaFY9ZkQthsOPkn5MKCWUV4GdJ__YEI",
@@ -190,15 +297,18 @@
         let allDogsData = []; // Store all dog data
         let showEntryStatuses = {}; // Object to store the selected status for each dog
         let existingShowEntries = {}; // Object to store existing show entries
+        let allBreeds = [];
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUserID = user.uid;
                 fetchShowDetails();
+                fetchBreeds();
             } else {
                 currentUserID = null;
                 console.log("User is not logged in.");
                 fetchShowDetails();
+                fetchBreeds();
             }
         });
 
@@ -276,6 +386,148 @@
             }
         }
 
+        async function fetchBreeds() {
+            try {
+                const breedsSnapshot = await breedsCollection.orderBy('Breed').get();
+                allBreeds = breedsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                populateBreedFilter();
+            } catch (error) {
+                console.error("Error fetching breeds:", error);
+                errorPotentialNumbersElement.textContent = `Failed to load breeds: ${error.message}`;
+                errorPotentialNumbersElement.style.display = 'block';
+                loadingPotentialNumbersElement.style.display = 'none';
+            }
+        }
+        function populateBreedFilter() {
+            allBreeds.forEach(breed => {
+                const option = document.createElement('option');
+                option.value = breed.Breed;
+                option.textContent = breed.Breed;
+                breedFilterDropdown.appendChild(option);
+            });
+            breedFilterDropdown.addEventListener('change', handleBreedFilterChange);
+        }
+        async function handleBreedFilterChange(event) {
+            const selectedBreed = event.target.value;
+            loadingPotentialNumbersElement.style.display = 'block';
+            potentialNumbersTable.style.display = 'none';
+            await calculatePotentialNumbers(selectedBreed);
+            loadingPotentialNumbersElement.style.display = 'none';
+            potentialNumbersTable.style.display = 'table';
+        }
+        async function calculatePotentialNumbers(filterBreed = '') {
+    let interestedDogClass = 0;
+    let interestedBitchClass = 0;
+    let interestedDogSpecial = 0;
+    let interestedBitchSpecial = 0;
+    let goingDogClass = 0;
+    let goingBitchClass = 0;
+    let goingDogSpecial = 0;
+    let goingBitchSpecial = 0;
+    let enteredDogClass = 0;
+    let enteredBitchClass = 0;
+    let enteredDogSpecial = 0;
+    let enteredBitchSpecial = 0;
+
+    try {
+        let dogsQuery = db.collection('Dog');
+        if (filterBreed) {
+            dogsQuery = dogsQuery.where('Breed', '==', filterBreed);
+        }
+        const dogsSnapshot = await dogsQuery.get();
+
+        for (const dogDoc of dogsSnapshot.docs) {
+            const dogData = dogDoc.data();
+            const dogId = dogDoc.id;
+            const sex = dogData.Sex;
+            const champion = dogData.Champion === true || dogData.Champion === 'true' || dogData.Champion === 'True' || dogData.Champion === 1; // Handle boolean, string, and number
+            const isSpecial = dogData.IsSpecial === true || dogData.IsSpecial === 'true' || dogData.IsSpecial === 'True' || dogData.IsSpecial === 1; // Handle boolean, string, and number
+
+            const entrySnapshot = await db.collection('ShowEntries')
+                .where('DogID', '==', dogId)
+                .where('ShowID', '==', currentShowId)
+                .get();
+
+            entrySnapshot.forEach(entryDoc => {
+                const entryData = entryDoc.data();
+                const interestLevel = entryData.InterestLevel;
+
+                if (interestLevel === 1) { // Interested
+                    if (sex === 'Male') {
+                        if (!champion) {
+                            interestedDogClass++;
+                        } else if (isSpecial) {
+                            interestedDogSpecial++;
+                        }
+                    } else if (sex === 'Female') {
+                        if (!champion) {
+                            interestedBitchClass++;
+                        } else if (isSpecial) {
+                            interestedBitchSpecial++;
+                        }
+                    }
+                } else if (interestLevel === 2) { // Going
+                    if (sex === 'Male') {
+                        if (!champion) {
+                            goingDogClass++;
+                        } else if (isSpecial) {
+                            goingDogSpecial++;
+                        }
+                    } else if (sex === 'Female') {
+                        if (!champion) {
+                            goingBitchClass++;
+                        } else if (isSpecial) {
+                            goingBitchSpecial++;
+                        }
+                    }
+                } else if (interestLevel === 3) { // Entered
+                    if (sex === 'Male') {
+                        if (!champion) {
+                            enteredDogClass++;
+                        } else if (isSpecial) {
+                            enteredDogSpecial++;
+                        }
+                    } else if (sex === 'Female') {
+                        if (!champion) {
+                            enteredBitchClass++;
+                        } else if (isSpecial) {
+                            enteredBitchSpecial++;
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update the table in the HTML
+        interestedDogClassCell.textContent = interestedDogClass;
+        interestedBitchClassCell.textContent = interestedBitchClass;
+        interestedDogSpecialCell.textContent = interestedDogSpecial;
+        interestedBitchSpecialCell.textContent = interestedBitchSpecial;
+
+        goingDogClassCell.textContent = goingDogClass;
+        goingBitchClassCell.textContent = goingBitchClass;
+        goingDogSpecialCell.textContent = goingDogSpecial;
+        goingBitchSpecialCell.textContent = goingBitchSpecial;
+
+        enteredDogClassCell.textContent = enteredDogClass;
+        enteredBitchClassCell.textContent = enteredBitchClass;
+        enteredDogSpecialCell.textContent = enteredDogSpecial;
+        enteredBitchSpecialCell.textContent = enteredBitchSpecial;
+
+        totalDogClassCell.textContent = interestedDogClass + goingDogClass + enteredDogClass;
+        totalBitchClassCell.textContent = interestedBitchClass + goingBitchClass + enteredBitchClass;
+        totalDogSpecialCell.textContent = interestedDogSpecial + goingDogSpecial + enteredDogSpecial;
+        totalBitchSpecialCell.textContent = interestedBitchSpecial + goingBitchSpecial + enteredBitchSpecial;
+
+    } catch (error) {
+        console.error("Error calculating potential numbers:", error);
+        errorPotentialNumbersElement.textContent = `Failed to calculate potential numbers: ${error.message}`;
+        errorPotentialNumbersElement.style.display = 'block';
+        loadingPotentialNumbersElement.style.display = 'none';
+    }
+}
+
+
         function displayDogList() {
             dogsInShowListElement.innerHTML = '';
             allDogsData.forEach(dog => {
@@ -322,7 +574,7 @@
                 dogsInShowListElement.appendChild(listItem);
             });
         }
-
+        
         function formatDate(date) {
             if (date && date.toDate) {
                 const jsDate = date.toDate();
