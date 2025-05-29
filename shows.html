@@ -148,31 +148,29 @@
                 });
             </script>
         <div class="content-container">
-    <h1>Upcoming Shows</h1>
-
-    <div id="filter-container">
-        <div>
-            <label for="state-filter">Filter by State:</label>
-            <select id="state-filter" multiple>
-                </select>
+            <h1>Upcoming Shows</h1>
+            <div id="filter-container">
+                <div>
+                    <label for="state-filter">Filter by State:</label>
+                    <select id="state-filter" multiple>
+                        </select>
+                </div>
+                <div>
+                    <label for="start-date-filter">Filter by Date:</label>
+                    <input type="date" id="start-date-filter">
+                    <label for="end-date-filter">to</label>
+                    <input type="date" id="end-date-filter">
+                </div>
+                <div class="filter-actions">
+                    <button onclick="applyFilters()">Apply Filters</button>
+                    <button type="button" onclick="clearFilters()">Clear Filters</button>
+                </div>
+            </div>
+            <div id="loading-message">Loading shows...</div>
+            <ul id="shows-list">
+            </ul>
+            <div id="error-message" style="display: none;"></div>
         </div>
-        <div>
-            <label for="start-date-filter">Filter by Date:</label>
-            <input type="date" id="start-date-filter">
-            <label for="end-date-filter">to</label>
-            <input type="date" id="end-date-filter">
-        </div>
-        <div class="filter-actions">
-            <button onclick="applyFilters()">Apply Filters</button>
-            <button type="button" onclick="clearFilters()">Clear Filters</button>
-        </div>
-    </div>
-        </div>
-
-    <div id="loading-message">Loading shows...</div>
-    <ul id="shows-list">
-    </ul>
-    <div id="error-message" style="display: none;"></div>
     </div>
     <script>
         const firebaseConfig = {
