@@ -25,6 +25,9 @@
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            display: flex; /* Added flex layout */
+            flex-direction: column; /* Stack details and button */
+            align-items: flex-start; /* Align items to the start */
         }
         .detail-item {
             margin-bottom: 10px;
@@ -91,6 +94,8 @@
         #save-changes-button {
             background-color: #28a745; /* Green save button */
             color: white;
+            margin-top: 15px; /* Add some space above the button */
+            align-self: flex-end; /* Align the button to the end (right in column) */
         }
         #save-changes-button:hover {
             background-color: #1e7e34;
@@ -125,6 +130,7 @@
         <div class="detail-item"><strong>City:</strong> <span id="show-city"></span></div>
         <div class="detail-item"><strong>State:</strong> <span id="show-state"></span></div>
         <div class="detail-item"><strong>Registration Closes:</strong> <span id="close-date"></span></div>
+        <button id="save-changes-button" class="button">Save Changes</button>
         </div>
     <div id="error-message" style="display: none;"></div>
 
@@ -137,7 +143,6 @@
     </div>
 
     <div class="button-container">
-        <button id="save-changes-button" class="button">Save Changes</button>
         <button id="back-to-shows-button" class="button">Back to Shows</button>
     </div>
     </div>
@@ -180,7 +185,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         const currentShowId = urlParams.get('id');
 
-        <!-- let currentShowId = null; -->
         let currentUserID = null;
         let allDogsData = []; // Store all dog data
         let showEntryStatuses = {}; // Object to store the selected status for each dog
