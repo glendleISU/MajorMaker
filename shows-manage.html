@@ -441,7 +441,6 @@
             const dogId = dogDoc.id;
             const sex = dogData.Sex;
             const champion = dogData.Champion === true || dogData.Champion === 'true' || dogData.Champion === 'True' || dogData.Champion === 1; // Handle boolean, string, and number
-            const isSpecial = dogData.IsSpecial === true || dogData.IsSpecial === 'true' || dogData.IsSpecial === 'True' || dogData.IsSpecial === 1; // Handle boolean, string, and number
 
             const entrySnapshot = await db.collection('ShowEntries')
                 .where('DogID', '==', dogId)
@@ -456,13 +455,13 @@
                     if (sex === 'Male') {
                         if (!champion) {
                             interestedDogClass++;
-                        } else if (isSpecial) {
+                        } else {
                             interestedDogSpecial++;
                         }
                     } else if (sex === 'Female') {
                         if (!champion) {
                             interestedBitchClass++;
-                        } else if (isSpecial) {
+                        } else {
                             interestedBitchSpecial++;
                         }
                     }
@@ -470,13 +469,13 @@
                     if (sex === 'Male') {
                         if (!champion) {
                             goingDogClass++;
-                        } else if (isSpecial) {
+                        } else {
                             goingDogSpecial++;
                         }
                     } else if (sex === 'Female') {
                         if (!champion) {
                             goingBitchClass++;
-                        } else if (isSpecial) {
+                        } else {
                             goingBitchSpecial++;
                         }
                     }
@@ -484,13 +483,13 @@
                     if (sex === 'Male') {
                         if (!champion) {
                             enteredDogClass++;
-                        } else if (isSpecial) {
+                        } else {
                             enteredDogSpecial++;
                         }
                     } else if (sex === 'Female') {
                         if (!champion) {
                             enteredBitchClass++;
-                        } else if (isSpecial) {
+                        } else {
                             enteredBitchSpecial++;
                         }
                     }
@@ -526,7 +525,6 @@
         loadingPotentialNumbersElement.style.display = 'none';
     }
 }
-
 
         function displayDogList() {
             dogsInShowListElement.innerHTML = '';
