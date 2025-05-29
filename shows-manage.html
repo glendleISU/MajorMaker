@@ -77,7 +77,7 @@
             border-radius: 4px;
             border: 1px solid #ccc;
         }
-        .button-container {
+        <!-- .button-container {
             display: flex;
             justify-content: center;
             margin-top: 20px;
@@ -89,8 +89,8 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            margin: 0 10px; /* Add some spacing between buttons */
-        }
+            margin: 0 10px; /* Add some spacing between buttons */ 
+        } -->
         #save-changes-button {
             background-color: #28a745; /* Green save button */
             color: white;
@@ -100,13 +100,13 @@
         #save-changes-button:hover {
             background-color: #1e7e34;
         }
-        #back-to-shows-button {
+        <!-- #back-to-shows-button {
             background-color: #007bff; /* Blue back button */
             color: white;
         }
         #back-to-shows-button:hover {
             background-color: #0056b3;
-        }
+        } -->
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -122,29 +122,25 @@
                   document.querySelector('.page-container').insertAdjacentHTML('afterbegin', data);
             });
         </script>
-    <h1>Manage Show</h1>
-    <div id="loading-message">Loading show details...</div>
-    <div id="show-details" style="display: none;">
-        <div class="detail-item"><strong>Show Name:</strong> <span id="show-name"></span></div>
-        <div class="detail-item"><strong>Date:</strong> <span id="show-date"></span></div>
-        <div class="detail-item"><strong>City:</strong> <span id="show-city"></span></div>
-        <div class="detail-item"><strong>State:</strong> <span id="show-state"></span></div>
-        <div class="detail-item"><strong>Registration Closes:</strong> <span id="close-date"></span></div>
-        <button id="save-changes-button" class="button">Save Changes</button>
+        <h1>Manage Show</h1>
+        <div id="loading-message">Loading show details...</div>
+            <div id="show-details" style="display: none;">
+                <div class="detail-item"><strong>Show Name:</strong> <span id="show-name"></span></div>
+                <div class="detail-item"><strong>Date:</strong> <span id="show-date"></span></div>
+                <div class="detail-item"><strong>City:</strong> <span id="show-city"></span></div>
+                <div class="detail-item"><strong>State:</strong> <span id="show-state"></span></div>
+                <div class="detail-item"><strong>Registration Closes:</strong> <span id="close-date"></span></div>
+                <button id="save-changes-button" class="button">Save Changes</button>
+            </div>
+        <div id="error-message" style="display: none;"></div>
+    
+        <div id="dogs-in-show-section">
+            <h2>Dogs Entered in This Show</h2>
+            <div id="loading-dogs-message">Loading dogs...</div>
+            <ul id="dogs-in-show-list">
+                </ul>
+            <div id="error-dogs-message" style="display: none;"></div>
         </div>
-    <div id="error-message" style="display: none;"></div>
-
-    <div id="dogs-in-show-section">
-        <h2>Dogs Entered in This Show</h2>
-        <div id="loading-dogs-message">Loading dogs...</div>
-        <ul id="dogs-in-show-list">
-            </ul>
-        <div id="error-dogs-message" style="display: none;"></div>
-    </div>
-
-    <div class="button-container">
-        <button id="back-to-shows-button" class="button">Back to Shows</button>
-    </div>
     </div>
 
     <script>
@@ -384,10 +380,6 @@
         }
 
         saveChangesButton.addEventListener('click', saveShowEntries);
-
-        backToShowsButton.addEventListener('click', () => {
-            window.location.href = 'shows.html';
-        });
 
         // Fetch show details and then all dogs when the page loads
         fetchShowDetails();
