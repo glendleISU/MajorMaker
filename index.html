@@ -8,107 +8,104 @@
     <title>Major Maker</title>
     <link rel="icon" type="image/x-icon" href="MMLogo.png">
     <style>
-    body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding-top: 50px;
-        background-color: #f4f4f4;
-    }
-    h1 {
-        color: #333;
-        margin-bottom: 30px;
-    }
-    .auth-container {
-        background-color: white;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-        width: 350px;
-    }
-    .form-group {
-        margin-bottom: 15px;
-    }
-    label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-    }
-    input[type="email"],
-    input[type="password"] {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        font-size: 16px;
-    }
-    button {
-        padding: 10px 20px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        background-color: #007bff;
-        color: white;
-        transition: background-color 0.3s ease;
-        width: 100%;
-        margin-bottom: 10px;
-    }
-    button:hover {
-        background-color: #0056b3;
-    }
-    .social-login {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
-        justify-content: center; /* Center the social login buttons */
-    }
-    .social-login button {
-        background-color: #dd4b39; /* Google color */
-        flex-grow: 1; /* Make social buttons take equal width */
-    }
-    .social-login button.facebook {
-        background-color: #3b5998; /* Facebook color */
-    }
-    .social-login button:hover {
-        opacity: 0.9;
-    }
-    .switch-auth {
-        margin-top: 15px;
-        text-align: center;
-    }
-    .switch-auth a {
-        text-decoration: none;
-        color: #007bff;
-    }
-    .switch-auth a:hover {
-        text-decoration: underline;
-    }
-    #error-message {
-        color: red;
-        margin-top: 10px;
-        text-align: center; /* Center the error message */
-    }
-    .button-container#main-buttons {
-        display: flex;
-        flex-direction: column; /* Stack the main buttons vertically */
-        gap: 10px;
-        margin-top: 30px;
-        width: 350px; /* Match the auth container width */
-    }
-    .button-container#main-buttons button {
-        /* Inherit button styles, no need to redefine */
-    }
-    .button-container#main-buttons button a {
-        text-decoration: none;
-        color: white;
-        display: block; /* Make the entire button clickable */
-        width: 100%;
-        height: 100%;
-    }
-</style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+            background-color: #f4f4f4;
+        }
+    
+        .auth-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 350px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .social-login {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center; /* Center the social login buttons */
+        }
+        .social-login button {
+            background-color: #dd4b39; /* Google color */
+            flex-grow: 1; /* Make social buttons take equal width */
+        }
+        .social-login button.facebook {
+            background-color: #3b5998; /* Facebook color */
+        }
+        .social-login button:hover {
+            opacity: 0.9;
+        }
+        .switch-auth {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .switch-auth a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .switch-auth a:hover {
+            text-decoration: underline;
+        }
+        #error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center; /* Center the error message */
+        }
+        .button-container#main-buttons {
+            display: flex;
+            flex-direction: column; /* Stack the main buttons vertically */
+            gap: 10px;
+            margin-top: 30px;
+            width: 350px; /* Match the auth container width */
+        }
+        .button-container#main-buttons button {
+            /* Inherit button styles, no need to redefine */
+        }
+        .button-container#main-buttons button a {
+            text-decoration: none;
+            color: white;
+            display: block; /* Make the entire button clickable */
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
