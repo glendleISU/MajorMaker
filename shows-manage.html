@@ -11,6 +11,10 @@
             margin: 20px;
             color: #333;
         }
+        .content-container {
+            background-color: white;
+            border-radius: 0 0 8px 8px;
+        }
         h1 {
             color: #007bff;
             text-align: center;
@@ -121,6 +125,7 @@
                   document.querySelector('.page-container').insertAdjacentHTML('afterbegin', data);
             });
         </script>
+        <div id="content-container">
         <h1>Manage Show</h1>
         <div id="loading-message">Loading show details...</div>
             <div id="show-details" style="display: none;">
@@ -140,6 +145,7 @@
                 </ul>
             <div id="error-dogs-message" style="display: none;"></div>
         </div>
+    </div>
     </div>
 
     <script>
