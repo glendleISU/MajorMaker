@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Entries - Major Maker</title>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="navigation.css">
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #toggle-past-shows {
+            display: block;
+            margin: 10px auto;
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+        #toggle-past-shows.active {
+            background-color: #007bff;
+            color: white;
+        }
+        #show-entries-list {
+            list-style: none;
+            padding: 0;
+        }
+        .show-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .show-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .show-title a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 0.9em;
+        }
+        .show-title a:hover {
+            text-decoration: underline;
+        }
+        .entry-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .entry-item:last-child {
+            border-bottom: none;
+        }
+        .entry-item span {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .entry-item select {
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        #loading-message {
+            text-align: center;
+            font-style: italic;
+            color: #777;
+        }
+        #error-message {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="page-container">
+        <script>
+            fetch('navigation.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.querySelector('.page-container').insertAdjacentHTML('afterbegin', data);
+                });
+        </script>
+        <h1>Your Show Entries</h1>
+        <button id="toggle-past-shows">Show Past Shows</button>
+        <div id="loading-message">Loading your show entries...</div>
+        <ul id="show-entries-list">
+            </ul>
+        <div id="error-message" style="display: none;"></div>
+    </div>
+
+    <script>
+        const showEntriesList = document.getElementById('show-entries-list');
+        const loadingMessage = document.getElementById('loading-message');
+        const errorMessage = document.getElementById('error-message');
+        const togglePastShowsButton = document.getElementById('toggle-past-shows');
+
+        let currentUserID = null;
+        let showPastShows = false;
+        let showsData = {}; // Store show details by ID
+        const interestLevels = ["N/A", "Interested", "Going", "Entered"];
+
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDudaFY9ZkQthsOPkn5MKCWUV4GdJ__YEI",
+            authDomain: "major-maker-580e8.firebaseapp.com",
+            databaseURL: "https://major-maker-580e8-default-rtdb.firebaseio.com",
+            projectId: "major-maker-580e8",
+            storageBucket: "major-maker-580e8.firebasestorage.app",
+            messagingSenderId: "342221542780",
+            appId: "1:342221542780:web:057da75b81136edd4a40f9",
+            measurementId: "G-LGWRJMMMSS"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const showsCollection = db.collection('Shows');
+        const dogsCollection = db.collection('Dog');
+        const showEntriesCollection = db.collection('ShowEntries');
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUserID = user.uid;
+                await fetchShowsData();
+                fetchUserShowEntries();
+            } else {
+                currentUserID = null;
+                console.log("User is not logged in.");
+                loadingMessage.textContent = "Please log in to see your show entries.";
+            }
+        });
+
+        async function fetchShowsData() {
+            try {
+                const showsSnapshot = await showsCollection.get();
+                showsSnapshot.forEach(doc => {
+                    showsData[doc.id] = doc.data();
+                });
+            } catch (error) {
+                console.error("Error fetching shows data:", error);
+                errorMessage.textContent = `Failed to load shows data: ${error.message}`;
+                errorMessage.style.display = 'block';
+                loadingMessage.style.display = 'none';
+            }
+        }
+
+        async function fetchUserShowEntries() {
+            if (!currentUserID) return;
+
+            loadingMessage.style.display = 'block';
+            showEntriesList.innerHTML = '';
+            errorMessage.style.display = 'none';
+
+            try {
+                const userDogsSnapshot = await dogsCollection.where('OwnerID', '==', currentUserID).get();
+                const userDogIds = userDogsSnapshot.docs.map(doc => doc.id);
+
+                if (userDogIds.length === 0) {
+                    loadingMessage.textContent = "You haven't added any dogs yet.";
+                    return;
+                }
+
+                const entriesSnapshot = await showEntriesCollection
+                    .where('DogID', 'in', userDogIds)
+                    .get();
+
+                const entriesByShow = {};
+
+                entriesSnapshot.forEach(entryDoc => {
+                    const entryData = entryDoc.data();
+                    const showId = entryData.ShowID;
+                    if (showsData[showId]) {
+                        if (!entriesByShow[showId]) {
+                            entriesByShow[showId] = {
+                                show: showsData[showId],
+                                entries: []
+                            };
+                        }
+                        entriesByShow[showId].entries.push({
+                            id: entryDoc.id,
+                            dogId: entryData.DogID,
+                            interestLevel: entryData.InterestLevel
+                        });
+                    }
+                });
+
+                const sortedShows = Object.values(entriesByShow).sort((a, b) => {
+                    const dateA = a.show.ShowDate ? (a.show.ShowDate.toDate ? a.show.ShowDate.toDate() : new Date(a.show.ShowDate)) : new Date(0);
+                    const dateB = b.show.ShowDate ? (b.show.ShowDate.toDate ? b.show.ShowDate.toDate() : new Date(b.show.ShowDate)) : new Date(0);
+                    return dateA - dateB;
+                });
+
+                const now = new Date();
+
+                sortedShows.forEach(({ show, entries }) => {
+                    const showDate = show.ShowDate ? (show.ShowDate.toDate ? show.ShowDate.toDate() : new Date(show.ShowDate)) : new Date(0);
+                    const isFutureShow = showDate >= now;
+
+                    if ((showPastShows && showDate < now) || (!showPastShows && isFutureShow)) {
+                        const showGroup = document.createElement('li');
+                        showGroup.classList.add('show-group');
+
+                        const showTitle = document.createElement('div');
+                        showTitle.classList.add('show-title');
+                        showTitle.textContent = show.ShowName || 'Unknown Show';
+                        const manageLink = document.createElement('a');
+                        manageLink.href = `shows-manage.html?id=${show.id}`;
+                        manageLink.textContent = 'Manage Show';
+                        showTitle.appendChild(manageLink);
+                        showGroup.appendChild(showTitle);
+
+                        entries.forEach(entry => {
+                            const dog = allDogsData.find(d => d.id === entry.dogId);
+                            if (dog) {
+                                const entryItem = document.createElement('div');
+                                entryItem.classList.add('entry-item');
+                                entryItem.innerHTML = `<span>${dog.DogRegName || 'Unknown Dog'}</span>`;
+
+                                const statusDropdown = document.createElement('select');
+                                statusDropdown.dataset.entryId = entry.id;
+                                statusDropdown.dataset.dogId = entry.dogId;
+                                statusDropdown.addEventListener('change', (event) => {
+                                    updateInterestLevel(event.target.dataset.entryId, parseInt(event.target.value));
+                                });
+
+                                interestLevels.forEach((level, index) => {
+                                    const option = document.createElement('option');
+                                    option.value = index;
+                                    option.textContent = level;
+                                    option.selected = entry.interestLevel === index;
+                                    statusDropdown.appendChild(option);
+                                });
+                                entryItem.appendChild(statusDropdown);
+                                showGroup.appendChild(entryItem);
+                            }
+                        });
+                        showEntriesList.appendChild(showGroup);
+                    }
+                });
+
+                if (showEntriesList.children.length === 0 && !showPastShows) {
+                    loadingMessage.textContent = "No upcoming show entries found.";
+                } else if (showEntriesList.children.length === 0 && showPastShows) {
+                    loadingMessage.textContent = "No past show entries found.";
+                } else {
+                    loadingMessage.style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error("Error fetching user show entries:", error);
+                errorMessage.textContent = `Failed to load your show entries: ${error.message}`;
+                errorMessage.style.display = 'block';
+                loadingMessage.style.display = 'none';
+            }
+        }
+
+        async function updateInterestLevel(entryId, newInterestLevel) {
+            try {
+                await showEntriesCollection.doc(entryId).update({
+                    InterestLevel: newInterestLevel
+                });
+                console.log(`Updated entry ${entryId} to level ${newInterestLevel}`);
+                // Optionally, provide visual feedback to the user
+            } catch (error) {
+                console.error("Error updating interest level:", error);
+                alert("Failed to update interest level. Please try again.");
+            }
+        }
+
+        togglePastShowsButton.addEventListener('click', () => {
+            showPastShows = !showPastShows;
+            togglePastShowsButton.classList.toggle('active', showPastShows);
+            togglePastShowsButton.textContent = showPastShows ? 'Show Upcoming Shows' : 'Show Past Shows';
+            fetchUserShowEntries();
+        });
+
+        // Fetch all dogs data once for looking up dog names
+        let allDogsData = [];
+        async function fetchAllDogs() {
+            try {
+                const dogsSnapshot = await dogsCollection.where('OwnerID', '==', currentUserID).get();
+                allDogsData = dogsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            } catch (error) {
+                console.error("Error fetching all dogs:", error);
+                errorMessage.textContent = `Failed to load your dogs: ${error.message}`;
+                errorMessage.style.display = 'block';
+                loadingMessage.style.display = 'none';
+            }
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUserID = user.uid;
+                await fetchShowsData();
+                await fetchAllDogs();
+                fetchUserShowEntries();
+            } else {
+                currentUserID = null;
+                console.log("User is not logged in.");
+                loadingMessage.textContent = "Please log in to see your show entries.";
+            }
+        });
+
+    </script>
+</body>
+</html>
