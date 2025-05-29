@@ -12,6 +12,10 @@
             background-color: #f4f4f4;
             color: #333;
         }
+        .content-container {
+            background-color: white;
+            border-radius: 0 0 8px 8px;
+        }
         h1 {
             color: #007bff;
             text-align: center;
@@ -143,6 +147,7 @@
                       document.querySelector('.page-container').insertAdjacentHTML('afterbegin', data);
                 });
             </script>
+        <div class="content-container">
     <h1>Upcoming Shows</h1>
 
     <div id="filter-container">
@@ -162,6 +167,7 @@
             <button type="button" onclick="clearFilters()">Clear Filters</button>
         </div>
     </div>
+        </div>
 
     <div id="loading-message">Loading shows...</div>
     <ul id="shows-list">
