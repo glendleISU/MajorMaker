@@ -36,7 +36,7 @@
 .logo-container{
   position: absolute;
   top: 15px;
-  left: 10 px;
+  <!-- left: 10 px; -->
   float: left;
   max-width: 80px;
   max-height: auto;
