@@ -112,7 +112,7 @@
             background-color: #0056b3;
         } -->
         #potential-numbers-section {
-            margin-top: 30px;
+            margin-top: 10px;
             padding: 15px;
             background-color: #fff;
             border: 1px solid #ddd;
@@ -289,6 +289,7 @@
         const db = firebase.firestore();
         const showsCollection = db.collection('Shows');
         const dogsCollection = db.collection('Dog');
+        const breedsCollection = db.collection('Breeds');
         const showEntriesCollection =db.collection('ShowEntries');
         const urlParams = new URLSearchParams(window.location.search);
         const currentShowId = urlParams.get('id');
