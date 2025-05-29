@@ -8,10 +8,8 @@
 /* Base typography */
 body {
   font-family: Arial, sans-serif;
-  line-height: 1.6;
-  background-color: #f9f9f9;
-  color: #333;
-  padding-top: 60px; /* Space for fixed navbar if needed */
+  display: flex;
+  align-items: center;
 }
 
 /* Links */
@@ -25,8 +23,8 @@ a:hover {
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
-  margin-bottom: 0.5em;
-  color: #222;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 /* Utility classes */
@@ -34,4 +32,20 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+}
+
+/* Buttons */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s ease;
+    margin-top: 15px; /* Added some margin */
+    width: 100%;
+}
+button:hover {
+    background-color: #0056b3;
 }
