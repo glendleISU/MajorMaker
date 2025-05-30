@@ -90,6 +90,9 @@
         .filter-actions button[type="button"]:hover {
             background-color: #c82333;
         }
+        #shows-cluster-container {
+            margin-bottom: 20px;
+        }
         .cluster-container {
             margin-bottom: 20px;
         }
@@ -275,6 +278,8 @@
                     }
                     showsByCluster[cluster].push({ id: doc.id, ...showData });
                 });
+
+                console.log("Shows by Cluster:", showsByCluster);
 
                 loadingMessageElement.style.display = 'none';
 
