@@ -145,11 +145,13 @@
             if (user) {
                 currentUserID = user.uid;
                 await fetchShowsData();
+                await fetchAllDogs();
                 fetchUserShowEntries();
             } else {
                 currentUserID = null;
                 console.log("User is not logged in.");
                 loadingMessage.textContent = "Please log in to see your show entries.";
+                showEntriesList.innerHTML = ''; // Clear any previous content
             }
         });
 
