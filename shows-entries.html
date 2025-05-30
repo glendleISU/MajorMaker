@@ -8,15 +8,6 @@
     <link rel="stylesheet" href="navigation.css">
     <style>
         body {
-            font-family: sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        h1 {
-            color: #007bff;
-            text-align: center;
-            margin-bottom: 20px;
         }
         #toggle-past-shows {
             display: block;
@@ -47,14 +38,10 @@
             font-size: 1.2em;
             font-weight: bold;
             margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         .show-title a {
             text-decoration: none;
             color: #007bff;
-            font-size: 0.9em;
         }
         .show-title a:hover {
             text-decoration: underline;
@@ -103,12 +90,14 @@
                     document.querySelector('.page-container').insertAdjacentHTML('afterbegin', data);
                 });
         </script>
-        <h1>Your Show Entries</h1>
-        <button id="toggle-past-shows">Show Past Shows</button>
-        <div id="loading-message">Loading your show entries...</div>
-        <ul id="show-entries-list">
-            </ul>
-        <div id="error-message" style="display: none;"></div>
+            <div class="content-container">
+                <h1>Your Show Entries</h1>
+                <button id="toggle-past-shows">Show Past Shows</button>
+                <div id="loading-message">Loading your show entries...</div>
+                <ul id="show-entries-list">
+                    </ul>
+                <div id="error-message" style="display: none;"></div>
+            </div>
     </div>
 
     <script>
@@ -166,7 +155,24 @@
                 loadingMessage.style.display = 'none';
             }
         }
-
+        
+        function formatDate(date) {
+            if (date && date.toDate) {
+                const jsDate = date.toDate();
+                const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+                const day = String(jsDate.getDate()).padStart(2, '0');
+                const year = jsDate.getFullYear();
+                return `${month}/${day}/${year}`;
+            } else if (typeof date === 'string') {
+                const jsDate = new Date(date);
+                const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+                const day = String(jsDate.getDate()).padStart(2, '0');
+                const year = jsDate.getFullYear();
+                return `${month}/${day}/${year}`;
+            }
+            return 'N/A';
+        }
+        
         async function fetchUserShowEntries() {
             if (!currentUserID) return;
 
@@ -225,11 +231,11 @@
 
                         const showTitle = document.createElement('div');
                         showTitle.classList.add('show-title');
-                        showTitle.textContent = show.ShowName || 'Unknown Show';
-                        const manageLink = document.createElement('a');
-                        manageLink.href = `shows-manage.html?id=${show.id}`;
-                        manageLink.textContent = 'Manage Show';
-                        showTitle.appendChild(manageLink);
+                        const showLink = document.createElement('a');
+                        showLink.href = `shows-manage.html?id=${show.id}`;
+                        const formattedDate = formatDate(show.ShowDate);
+                        showLink.textContent = `${show.ShowName || 'Unknown Show'} - ${formattedDate}`;
+                        showTitle.appendChild(showLink);
                         showGroup.appendChild(showTitle);
 
                         entries.forEach(entry => {
