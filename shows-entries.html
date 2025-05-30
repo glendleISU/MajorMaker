@@ -140,6 +140,7 @@
         const dogsCollection = db.collection('Dog');
         const showEntriesCollection = db.collection('ShowEntries');
 
+        // Only have ONE auth.onAuthStateChanged block
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUserID = user.uid;
@@ -169,7 +170,7 @@
                 loadingMessage.style.display = 'none';
             }
         }
-        
+
         function formatDate(date) {
             if (date && date.toDate) {
                 const jsDate = date.toDate();
@@ -186,7 +187,7 @@
             }
             return 'N/A';
         }
-        
+
         async function fetchUserShowEntries() {
             if (!currentUserID) return;
 
@@ -330,20 +331,6 @@
                 loadingMessage.style.display = 'none';
             }
         }
-
-        <!-- auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                currentUserID = user.uid;
-                await fetchShowsData();
-                await fetchAllDogs();
-                fetchUserShowEntries();
-            } else {
-                currentUserID = null;
-                console.log("User is not logged in.");
-                loadingMessage.textContent = "Please log in to see your show entries.";
-            }
-        }); -->
-
     </script>
 </body>
 </html>
