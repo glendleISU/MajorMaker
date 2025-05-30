@@ -158,6 +158,8 @@
                 const showsSnapshot = await showsCollection.get();
                 showsSnapshot.forEach(doc => {
                     showsData[doc.id] = doc.data();
+                    // Store the document ID as a property of the show data
+                    showsData[doc.id].id = doc.id;
                 });
             } catch (error) {
                 console.error("Error fetching shows data:", error);
