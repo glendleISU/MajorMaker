@@ -255,7 +255,7 @@
                             City: ${showData.ShowCity}, ${showData.ShowState}<br>
                             Registration Closes: ${formatDate(showData.CloseDate)}
                         </div>
-                        <button class="manage-button" onclick="navigateToManage('${showId}')">Manage</button>
+                        <!-- <button class="manage-button" onclick="navigateToManage('${showId}')">Manage</button> -->
                     `;
                     showsListElement.appendChild(listItem);
                 });
@@ -294,9 +294,9 @@
             displayUpcomingShows(); // Reload all shows
         }
 
-        function navigateToManage(showId) {
+        <!-- function navigateToManage(showId) {
             window.location.href = `shows-manage.html?id=${showId}`;
-        }
+        } -->
 
         function formatDate(date) {
             if (date && date.toDate) {
