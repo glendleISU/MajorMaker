@@ -40,7 +40,6 @@
             background-color: #fff;
             border-radius: 5px;
             padding: 15px;
-            <!-- margin-bottom: 20px; -->
             display: flex;
             gap: 20px;
             align-items: center;
@@ -62,70 +61,11 @@
             border: 1px solid #ccc;
         }
         #filter-button-container {
-            <!-- background-color: #fff;
-            border-radius: 5px; -->
             padding: 15px;
             margin-bottom: 20px;
             display: flex;
             flex-direction: row;
-            <!-- gap: 20px; -->
             align-items: center;    
-        }
-        .filter-button-container {
-            <!-- background-color: #fff;
-            border-radius: 5px; -->
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: row;
-            <!-- gap: 20px; -->
-            align-items: center;    
-        }
-        #shows-list {
-            list-style: none;
-            padding: 0;
-        }
-        #shows-list li {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        #shows-list li strong {
-            font-weight: bold;
-        }
-        #cluster-container {
-            list-style: none;
-            padding: 0;
-        }
-        #cluster-container li {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        #cluster-container li strong {
-            font-weight: bold;
-        }
-        .show-details {
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        #loading-message {
-            text-align: center;
-            font-style: italic;
-            color: #777;
-        }
-        #error-message {
-            color: red;
-            text-align: center;
-            margin-top: 20px;
         }
         .filter-actions {
             margin-top: 10px;
@@ -149,6 +89,66 @@
         }
         .filter-actions button[type="button"]:hover {
             background-color: #c82333;
+        }
+        .cluster-container {
+            margin-bottom: 20px;
+        }
+        .cluster-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .shows-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Minimum 300px width for each show */
+            gap: 15px;
+            list-style: none;
+            padding: 0;
+        }
+        .shows-grid li {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .shows-grid li strong {
+            font-weight: bold;
+            display: block;
+        }
+        .show-details {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .manage-link {
+            margin-top: 10px;
+        }
+        .manage-link a {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .manage-link a:hover {
+            background-color: #0056b3;
+        }
+        #loading-message {
+            text-align: center;
+            font-style: italic;
+            color: #777;
+        }
+        #error-message {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 
@@ -186,8 +186,8 @@
                 </div>
             </div>
             <div id="loading-message">Loading shows...</div>
-            <ul id="shows-list">
-            </ul>
+            <div id="shows-cluster-container">
+                </div>
             <div id="error-message" style="display: none;"></div>
         </div>
     </div>
@@ -234,7 +234,7 @@
 
         async function displayUpcomingShows(filters = {}) {
             loadingMessageElement.style.display = 'block';
-            showsListElement.innerHTML = '';
+            showsClusterContainer.innerHTML = ''; // Clear previous content
             errorMessageElement.style.display = 'none';
 
             let query = showsCollection.orderBy('ShowDate');
@@ -258,6 +258,7 @@
 
             try {
                 const snapshot = await query.get();
+                const showsByCluster = {};
 
                 if (snapshot.empty) {
                     loadingMessageElement.textContent = 'No shows found matching your filters.';
@@ -268,19 +269,50 @@
 
                 snapshot.forEach(doc => {
                     const showData = doc.data();
-                    const showId = doc.id;
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `
-                        <strong><a href="shows-manage.html?id=${showId}">${showData.ShowName}</a></strong>
-                        <div class="show-details">
-                            Date: ${formatDate(showData.ShowDate)}<br>
-                            City: ${showData.ShowCity}, ${showData.ShowState}<br>
-                            Registration Closes: ${formatDate(showData.CloseDate)}
-                        </div>
-                        <!-- <button class="manage-button" onclick="navigateToManage('${showId}')">Manage</button> -->
-                    `;
-                    showsListElement.appendChild(listItem);
+                    const cluster = showData.Cluster || 'Uncategorized'; // Handle cases where 'Cluster' might be missing
+                    if (!showsByCluster[cluster]) {
+                        showsByCluster[cluster] = [];
+                    }
+                    showsByCluster[cluster].push({ id: doc.id, ...showData });
                 });
+
+                loadingMessageElement.style.display = 'none';
+
+                for (const clusterName in showsByCluster) {
+                    if (showsByCluster.hasOwnProperty(clusterName)) {
+                        const showsInCluster = showsByCluster[clusterName];
+
+                        const clusterDiv = document.createElement('div');
+                        clusterDiv.classList.add('cluster-container');
+
+                        const clusterTitle = document.createElement('h2');
+                        clusterTitle.classList.add('cluster-title');
+                        clusterTitle.textContent = clusterName;
+                        clusterDiv.appendChild(clusterTitle);
+
+                        const showsGrid = document.createElement('ul');
+                        showsGrid.classList.add('shows-grid');
+
+                        showsInCluster.forEach(show => {
+                            const listItem = document.createElement('li');
+                            listItem.innerHTML = `
+                                <strong><a href="shows-manage.html?id=${show.id}">${show.ShowName}</a></strong>
+                                <div class="show-details">
+                                    Date: ${formatDate(show.ShowDate)}<br>
+                                    City: ${show.ShowCity}, ${show.ShowState}<br>
+                                    Registration Closes: ${formatDate(show.CloseDate)}
+                                </div>
+                                <div class="manage-link">
+                                    <a href="shows-manage.html?id=${show.id}">Manage</a>
+                                </div>
+                            `;
+                            showsGrid.appendChild(listItem);
+                        });
+
+                        clusterDiv.appendChild(showsGrid);
+                        showsClusterContainer.appendChild(clusterDiv);
+                    }
+                }
 
             } catch (error) {
                 console.error("Error fetching shows:", error);
