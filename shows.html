@@ -61,6 +61,15 @@
             border-radius: 4px;
             border: 1px solid #ccc;
         }
+        #filter-button-container {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
         #shows-list {
             list-style: none;
             padding: 0;
@@ -81,21 +90,6 @@
             font-size: 0.9em;
             color: #666;
         }
-        <!-- #shows-list li .manage-button {
-            margin-top: 10px;
-            padding: 8px 12px;
-            font-size: 0.9em;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        #shows-list li .manage-button:hover {
-            background-color: #0056b3;
-        } -->
 
         #loading-message {
             text-align: center;
@@ -159,7 +153,7 @@
                     <input type="date" id="end-date-filter">
                 </div>
             </div>
-            <div id="filter-container">
+            <div id="filter-button-container">
                 <div class="filter-actions">
                     <button onclick="applyFilters()">Apply Filters</button>
                     <button type="button" onclick="clearFilters()">Clear Filters</button>
