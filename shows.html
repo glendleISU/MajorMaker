@@ -70,6 +70,10 @@
             justify-content: flex-start; /* Align buttons to the start (left) - you can change this */
         }
         .filter-actions {
+            display: flex; /* Make this a flex container for the buttons */
+            flex-direction: row; /* Arrange buttons in a row */
+            align-items: center; /* Vertically align buttons if needed */
+            gap: 10px; /* Add space between the buttons */
         }
         .filter-actions button {
             padding: 8px 15px;
