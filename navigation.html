@@ -41,7 +41,8 @@
     document.addEventListener('DOMContentLoaded', () => {
       const logoutButton = document.getElementById('logout-button');
       if (logoutButton) {
-        logoutButton.addEventListener('click', () => {
+        logoutButton.addEventListener('click', (event) => { // Add the 'event' object
+          event.preventDefault(); // Prevent the default link behavior
           firebase.auth().signOut().then(() => {
             // Sign-out successful.
             console.log('User signed out');
