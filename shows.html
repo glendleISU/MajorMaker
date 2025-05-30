@@ -9,9 +9,6 @@
     <link rel="icon" type="image/x-icon" href="MMLogo.png">
     
     <style>
-        body {
-            color: #333;
-        }
         #content-container {
             background-color: white;
             border-radius: 0 0 8px 8px;
@@ -40,11 +37,9 @@
         }
         #filter-container {
             background-color: #fff;
-            <!-- border: 1px solid #ddd; -->
             border-radius: 5px;
             padding: 15px;
             margin-bottom: 20px;
-            <!-- box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); -->
             display: flex;
             gap: 20px;
             align-items: center;
@@ -85,7 +80,7 @@
             font-size: 0.9em;
             color: #666;
         }
-        #shows-list li .manage-button {
+        <!-- #shows-list li .manage-button {
             margin-top: 10px;
             padding: 8px 12px;
             font-size: 0.9em;
@@ -99,8 +94,30 @@
 
         #shows-list li .manage-button:hover {
             background-color: #0056b3;
+        } -->
+        
+        .show-info {
+            flex-grow: 1; /* Allow show info to take up more space */
+        }
+        .manage-link {
+            margin-left: 15px; /* Space from the show details */
+        }
+        .manage-link a {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none; /* Remove underline from link */
+            transition: background-color 0.3s ease;
         }
 
+        .manage-link a:hover {
+            background-color: #0056b3;
+        }
+        
         #loading-message {
             text-align: center;
             font-style: italic;
@@ -253,13 +270,17 @@
                     const showId = doc.id;
                     const listItem = document.createElement('li');
                     listItem.innerHTML = `
-                        <strong>${showData.ShowName}</strong>
-                        <div class="show-details">
-                            Date: ${formatDate(showData.ShowDate)}<br>
-                            City: ${showData.ShowCity}, ${showData.ShowState}<br>
-                            Registration Closes: ${formatDate(showData.CloseDate)}
+                        <div class="show-info">
+                            <strong><a href="shows-manage.html?id=${showId}" style="text-decoration: none; color: inherit;">${showData.ShowName}</a></strong>
+                            <div class="show-details">
+                                Date: ${formatDate(showData.ShowDate)}<br>
+                                City: ${showData.ShowCity}, ${showData.ShowState}<br>
+                                Registration Closes: ${formatDate(showData.CloseDate)}
+                            </div>
                         </div>
-                        <button class="manage-button" onclick="navigateToManage('${showId}')">Manage</button>
+                        <div class="manage-link">
+                            <a href="shows-manage.html?id=${showId}">Manage</a>
+                        </div>
                     `;
                     showsListElement.appendChild(listItem);
                 });
@@ -298,9 +319,9 @@
             displayUpcomingShows(); // Reload all shows
         }
 
-        function navigateToManage(showId) {
+        <!-- function navigateToManage(showId) {
             window.location.href = `shows-manage.html?id=${showId}`;
-        }
+        } -->
 
         function formatDate(date) {
             if (date && date.toDate) {
