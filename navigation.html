@@ -41,10 +41,11 @@
     document.addEventListener('DOMContentLoaded', () => {
       const logoutButton = document.getElementById('logout-button');
       if (logoutButton) {
-        console.log('Log out button found in navigation.html'); // Added log
+        console.log('Log out button found in navigation.html');
         logoutButton.addEventListener('click', (event) => {
           event.preventDefault();
-          console.log('Logout button clicked - attempting sign out...');
+          console.log('*** Click event fired on Log out button ***'); // Added log
+          console.log('Attempting sign out...');
           firebase.auth().signOut().then(() => {
             console.log('Sign out successful!');
             window.location.href = 'index.html';
@@ -52,7 +53,7 @@
             console.error('Error signing out:', error);
           });
         });
-        console.log('Log out button event listener attached.'); // Added log
+        console.log('Log out button event listener attached.');
       } else {
         console.warn('Log out button not found in navigation.html');
       }
