@@ -179,6 +179,7 @@
         </div>
         <div class="form-actions">
             <button class="submit-button" onclick="createNewShow()">Create Show</button>
+            <button class="submit-button" onclick="createNewInClusterShow()">Create Another Show in Cluster</button>
             <button class="cancel-button" onclick="clearForm()">Cancel</button>
         </div>
     </div>
@@ -299,7 +300,39 @@
             `;
             duplicateModal.style.display = 'block';
         }
-
+        asyn function createNewInClusterShow() {
+            let showDateToSave;
+            let closeDateToSave;
+        
+            if (newShowData) {
+                showDateToSave = newShowData.ShowDate;
+                closeDateToSave = newShowData.CloseDate;
+            } else {
+                const showDate = new Date(showDateInput.value);
+                const closeDate = new Date(closeDateInput.value);
+                showDateToSave = firebase.firestore.Timestamp.fromDate(showDate);
+                closeDateToSave = firebase.firestore.Timestamp.fromDate(closeDate);
+            }
+        
+            const newShow = {
+                ShowName: showNameInput.value,
+                Cluster: clusterInput.value,
+                ShowCity: showCityInput.value,
+                ShowState: showStateInput.value,
+                ShowDate: showDateToSave,
+                CloseDate: closeDateToSave,
+                RegistrationLink: registrationLinkInput.value
+                };
+            
+                try {
+                    await showsCollection.add(newShow);
+                    alert('New show created successfully!');
+                } catch (error) {
+                    console.error("Error creating new show:", error);
+                    alert('Failed to create new show. Please try again.');
+                }
+            }
+        
         async function createNewShow() {
             let showDateToSave;
             let closeDateToSave;
