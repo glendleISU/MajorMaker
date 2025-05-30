@@ -269,7 +269,7 @@
                     const showData = doc.data();
                     const showId = doc.id;
                     const listItem = document.createElement('li');
-                    listItem.innerHTML = `
+                    <!-- listItem.innerHTML = `
                         <div class="show-info">
                             <strong><a href="shows-manage.html?id=${showId}" style="text-decoration: none; color: inherit;">${showData.ShowName}</a></strong>
                             <div class="show-details">
@@ -281,7 +281,7 @@
                         <div class="manage-link">
                             <a href="shows-manage.html?id=${showId}">Manage</a>
                         </div>
-                    `;
+                    `; -->
                     showsListElement.appendChild(listItem);
                 });
 
