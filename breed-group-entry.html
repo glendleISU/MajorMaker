@@ -3,27 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bulk Breed Group Entry - Major Maker</title>
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="navigation.css">
+    <title>Breed Group Entry - Major Maker</title>
+    <link rel="icon" type="image/x-icon" href="MMLogo.png">
     <style>
         body {
             font-family: sans-serif;
             margin: 20px;
             background-color: #f4f4f4;
-            color: #333;
         }
-        h1 {
-            color: #007bff;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        #breed-list-container {
+        .container {
             background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
             padding: 20px;
+            border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
             margin-bottom: 20px;
         }
         label {
@@ -31,49 +29,83 @@
             margin-bottom: 8px;
             font-weight: bold;
         }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
         textarea {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            font-family: monospace;
-            font-size: 1em;
             box-sizing: border-box;
-            min-height: 150px;
-        }
-        #group-select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1em;
+            font-family: monospace; /* Use monospace for better readability of entries */
+            white-space: pre-wrap; /* Preserve line breaks */
         }
         button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            background-color: #28a745;
+            background-color: #007bff;
             color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
         }
         button:hover {
-            background-color: #1e7e34;
+            background-color: #0056b3;
         }
-        #status-message {
+        #breedListContainer {
             margin-top: 20px;
-            font-weight: bold;
-            text-align: center;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
         }
-        .success {
+        #breedList {
+            list-style: none;
+            padding: 0;
+        }
+        #breedList li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        #breedList li:last-child {
+            border-bottom: none;
+        }
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+        #message {
+            margin-top: 15px;
+            font-style: italic;
             color: green;
         }
-        .error {
+        #error-message {
+            margin-top: 15px;
             color: red;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 
@@ -82,103 +114,189 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <div class="page-container">
-        <script>
-            fetch('navigation.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.querySelector('.page-container').insertAdjacentHTML('afterbegin', data);
-                });
-        </script>
-        <div id="content-container">
-            <h1>Bulk Breed Group Entry</h1>
-            <div id="breed-list-container">
-                <label for="breed-list">Enter breeds, one per line:</label>
-                <textarea id="breed-list" placeholder="e.g.,&#10;Labrador Retriever&#10;German Shepherd&#10;Poodle"></textarea>
+    <div class="container">
+        <h1>Edit Breed Entries by Group</h1>
 
-                <label for="group-select">Select the group for these breeds:</label>
-                <select id="group-select">
-                    <option value="">-- Select Group --</option>
-                    <option value="Sporting">Sporting</option>
-                    <option value="Hound">Hound</option>
-                    <option value="Working">Working</option>
-                    <option value="Terrier">Terrier</option>
-                    <option value="Toy">Toy</option>
-                    <option value="Non-Sporting">Non-Sporting</option>
-                    <option value="Herding">Herding</option>
-                </select>
+        <label for="groupSelect">Select Group:</label>
+        <select id="groupSelect">
+            <option value="">Select a Group</option>
+            <option value="Sporting">Sporting</option>
+            <option value="Hound">Hound</option>
+            <option value="Working">Working</option>
+            <option value="Terrier">Terrier</option>
+            <option value="Toy">Toy</option>
+            <option value="Non-Sporting">Non-Sporting</option>
+            <option value="Herding">Herding</option>
+        </select>
 
-                <button onclick="pushBreedsToFirestore()">Push Breeds to Firestore</button>
-                <div id="status-message"></div>
-            </div>
+        <div id="breedEntrySection" class="hidden">
+            <h2>Edit Breeds for Selected Group</h2>
+            <label for="breedEntry">Breeds (one per line):</label>
+            <textarea id="breedEntry" rows="10" placeholder="Enter breeds here, one per line."></textarea>
+            <button id="saveBreedsButton">Save Breeds</button>
+            <div id="message" class="hidden">Breeds saved successfully!</div>
+            <div id="error-message" class="hidden">Error saving breeds. Please try again.</div>
+        </div>
+
+        <div id="breedListContainer" class="hidden">
+            <h2>Current Breeds in This Group</h2>
+            <ul id="breedList">
+                </ul>
         </div>
     </div>
 
     <script>
+        const groupSelect = document.getElementById('groupSelect');
+        const breedEntrySection = document.getElementById('breedEntrySection');
+        const breedEntry = document.getElementById('breedEntry');
+        const saveBreedsButton = document.getElementById('saveBreedsButton');
+        const breedListContainer = document.getElementById('breedListContainer');
+        const breedList = document.getElementById('breedList');
+        const messageElement = document.getElementById('message');
+        const errorMessageElement = document.getElementById('error-message');
+
         // Initialize Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyDudaFY9ZkQthsOPkn5MKCWUV4GdJ__YEI",
-            authDomain: "major-maker-580e8.firebaseapp.com",
-            databaseURL: "https://major-maker-580e8-default-rtdb.firebaseio.com",
-            projectId: "major-maker-580e8",
-            storageBucket: "major-maker-580e8.firebasestorage.app",
-            messagingSenderId: "342221542780",
-            appId: "1:342221542780:web:057da75b81136edd4a40f9",
-            measurementId: "G-LGWRJMMMSS"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
         };
 
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const breedsCollection = db.collection('Breeds');
-        const statusMessageElement = document.getElementById('status-message');
 
-        async function pushBreedsToFirestore() {
-            const breedListTextarea = document.getElementById('breed-list');
-            const groupSelect = document.getElementById('group-select');
-            const breedsText = breedListTextarea.value.trim();
-            const selectedGroup = groupSelect.value;
+        let currentSelectedGroup = null;
+        let currentBreedsInGroup = []; // To keep track of breeds fetched for the current group
 
-            if (!breedsText) {
-                statusMessageElement.textContent = "Please enter a list of breeds.";
-                statusMessageElement.className = 'error';
-                return;
+        groupSelect.addEventListener('change', async (event) => {
+            currentSelectedGroup = event.target.value;
+            breedEntrySection.classList.toggle('hidden', !currentSelectedGroup);
+            breedListContainer.classList.toggle('hidden', !currentSelectedGroup);
+            breedEntry.value = ''; // Clear the textarea when a new group is selected
+            messageElement.classList.add('hidden');
+            errorMessageElement.classList.add('hidden');
+
+            if (currentSelectedGroup) {
+                await fetchBreedsForGroup(currentSelectedGroup);
+            } else {
+                breedList.innerHTML = ''; // Clear the breed list if no group is selected
+                currentBreedsInGroup = [];
             }
+        });
 
-            if (!selectedGroup) {
-                statusMessageElement.textContent = "Please select a group.";
-                statusMessageElement.className = 'error';
-                return;
-            }
-
-            const breeds = breedsText.split('\n').map(breed => breed.trim()).filter(breed => breed !== '');
-
-            if (breeds.length === 0) {
-                statusMessageElement.textContent = "No valid breeds found in the list.";
-                statusMessageElement.className = 'error';
-                return;
-            }
-
-            statusMessageElement.textContent = "Pushing breeds to Firestore...";
-            statusMessageElement.className = '';
-
+        async function fetchBreedsForGroup(group) {
             try {
-                const batch = db.batch();
-                breeds.forEach(breed => {
-                    const breedDocRef = breedsCollection.doc(); // Let Firestore auto-generate IDs
-                    batch.set(breedDocRef, { Breed: breed, Group: selectedGroup });
+                const querySnapshot = await breedsCollection.where('Group', '==', group).orderBy('Breed').get();
+                breedList.innerHTML = '';
+                currentBreedsInGroup = [];
+
+                querySnapshot.forEach((doc) => {
+                    const breedData = doc.data();
+                    const listItem = document.createElement('li');
+                    listItem.textContent = breedData.Breed;
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.classList.add('delete-button');
+                    deleteButton.dataset.breedId = doc.id; // Store the document ID for deletion
+                    deleteButton.addEventListener('click', () => deleteBreed(doc.id, breedData.Breed));
+
+                    listItem.appendChild(deleteButton);
+                    breedList.appendChild(listItem);
+                    currentBreedsInGroup.push(breedData.Breed);
                 });
 
-                await batch.commit();
-                statusMessageElement.textContent = `Successfully added ${breeds.length} breeds to the "${selectedGroup}" group.`;
-                statusMessageElement.className = 'success';
-                breedListTextarea.value = ''; // Clear the textarea after successful push
-                groupSelect.value = ''; // Reset the select dropdown
+                // Populate the textarea with the fetched breeds
+                breedEntry.value = currentBreedsInGroup.join('\n');
+
             } catch (error) {
-                console.error("Error pushing breeds to Firestore:", error);
-                statusMessageElement.textContent = `Failed to push breeds: ${error.message}`;
-                statusMessageElement.className = 'error';
+                console.error("Error fetching breeds:", error);
+                breedList.innerHTML = `<li style="color: red;">Error loading breeds for this group.</li>`;
             }
         }
+
+        async function saveBreeds() {
+            if (!currentSelectedGroup) {
+                alert('Please select a group first.');
+                return;
+            }
+
+            const enteredBreeds = breedEntry.value.split('\n').map(breed => breed.trim()).filter(breed => breed !== '');
+            const existingBreedsInDB = new Set(currentBreedsInGroup);
+            const breedsToAdd = [];
+            const breedsToDelete = [];
+
+            // Identify breeds to add (not in the current DB list)
+            enteredBreeds.forEach(breed => {
+                if (!existingBreedsInDB.has(breed)) {
+                    breedsToAdd.push({ Breed: breed, Group: currentSelectedGroup });
+                }
+            });
+
+            // Identify breeds to delete (in the current DB list but not in the entered list)
+            currentBreedsInGroup.forEach(dbBreed => {
+                if (!enteredBreeds.includes(dbBreed)) {
+                    // Need to find the document ID to delete
+                    const docToDelete = Array.from(breedList.querySelectorAll('li'))
+                        .find(li => li.textContent.startsWith(dbBreed));
+                    if (docToDelete && docToDelete.querySelector('.delete-button')) {
+                        breedsToDelete.push(docToDelete.querySelector('.delete-button').dataset.breedId);
+                    }
+                }
+            });
+
+            messageElement.classList.add('hidden');
+            errorMessageElement.classList.add('hidden');
+
+            try {
+                // Add new breeds
+                const addPromises = breedsToAdd.map(breed => breedsCollection.add(breed));
+                await Promise.all(addPromises);
+
+                // Delete removed breeds
+                const deletePromises = breedsToDelete.map(breedId => breedsCollection.doc(breedId).delete());
+                await Promise.all(deletePromises);
+
+                messageElement.classList.remove('hidden');
+                await fetchBreedsForGroup(currentSelectedGroup); // Refresh the breed list
+                breedEntry.value = enteredBreeds.join('\n'); // Update the textarea to reflect changes
+
+            } catch (error) {
+                console.error("Error saving breeds:", error);
+                errorMessageElement.classList.remove('hidden');
+            }
+        }
+
+        async function deleteBreed(breedId, breedName) {
+            if (!confirm(`Are you sure you want to delete '${breedName}' from the ${currentSelectedGroup} group?`)) {
+                return;
+            }
+
+            messageElement.classList.add('hidden');
+            errorMessageElement.classList.add('hidden');
+
+            try {
+                await breedsCollection.doc(breedId).delete();
+                await fetchBreedsForGroup(currentSelectedGroup); // Refresh the breed list
+                // Update the textarea by removing the deleted breed
+                const currentText = breedEntry.value.split('\n').filter(breed => breed.trim() !== breedName).join('\n');
+                breedEntry.value = currentText;
+                messageElement.textContent = `'${breedName}' deleted successfully.`;
+                messageElement.classList.remove('hidden');
+            } catch (error) {
+                console.error("Error deleting breed:", error);
+                errorMessageElement.textContent = `Error deleting '${breedName}'. Please try again.`;
+                errorMessageElement.classList.remove('hidden');
+            }
+        }
+
+        saveBreedsButton.addEventListener('click', saveBreeds);
     </script>
 </body>
 </html>
