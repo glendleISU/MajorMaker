@@ -331,7 +331,7 @@
             }
         }
 
-        auth.onAuthStateChanged(async (user) => {
+        <!-- auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUserID = user.uid;
                 await fetchShowsData();
@@ -342,7 +342,7 @@
                 console.log("User is not logged in.");
                 loadingMessage.textContent = "Please log in to see your show entries.";
             }
-        });
+        }); -->
 
     </script>
 </body>
