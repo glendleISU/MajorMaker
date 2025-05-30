@@ -41,16 +41,14 @@
     document.addEventListener('DOMContentLoaded', () => {
       const logoutButton = document.getElementById('logout-button');
       if (logoutButton) {
-        logoutButton.addEventListener('click', (event) => { // Add the 'event' object
-          event.preventDefault(); // Prevent the default link behavior
+        logoutButton.addEventListener('click', (event) => {
+          event.preventDefault();
+          console.log('Logout button clicked - attempting sign out...');
           firebase.auth().signOut().then(() => {
-            // Sign-out successful.
-            console.log('User signed out');
-            window.location.href = 'index.html'; // Redirect to your index page
+            console.log('Sign out successful!');
+            window.location.href = 'index.html';
           }).catch((error) => {
-            // An error happened.
             console.error('Error signing out:', error);
-            // Optionally display an error message to the user
           });
         });
       } else {
