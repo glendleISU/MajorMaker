@@ -169,6 +169,10 @@
             <label for="close-date">Registration Close Date:</label>
             <input type="date" id="close-date" required>
         </div>
+        <div class="form-group">
+            <label for="registration-link">Registration Link Date:</label>
+            <input type="string" id="registration-link" required>
+        </div>
         <div class="form-actions">
             <button class="submit-button" onclick="createNewShow()">Create Show</button>
             <button class="cancel-button" onclick="clearForm()">Cancel</button>
@@ -208,6 +212,7 @@
         const showStateInput = document.getElementById('show-state');
         const showDateInput = document.getElementById('show-date');
         const closeDateInput = document.getElementById('close-date');
+        const registrationLinkInput = document.getElementById('registration-link');
         const duplicateModal = document.getElementById('duplicate-modal');
         const duplicateDetailsDiv = document.getElementById('duplicate-details');
 
@@ -248,7 +253,8 @@
                         ShowCity: showCityInput.value,
                         ShowState: showStateInput.value,
                         ShowDate: new firebase.firestore.Timestamp.fromDate(showDate),
-                        CloseDate: new firebase.firestore.Timestamp.fromDate(new Date(closeDateInput.value))
+                        CloseDate: new firebase.firestore.Timestamp.fromDate(new Date(closeDateInput.value)),
+                        RegistrationLink: registrationLinkInput.value
                     };
                     newShowData = newShow;
                     displayDuplicateModal(existingShow, newShow);
@@ -305,7 +311,8 @@
                 ShowCity: showCityInput.value,
                 ShowState: showStateInput.value,
                 ShowDate: showDateToSave,
-                CloseDate: closeDateToSave
+                CloseDate: closeDateToSave,
+                RegistrationLink: registrationLinkInput.value
                 };
             
                 try {
@@ -329,6 +336,7 @@
             showStateInput.value = '';
             showDateInput.value = '';
             closeDateInput.value = '';
+            registrationLinkInput.value= '';
         }
 
         function formatDate(timestamp) {
