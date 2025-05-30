@@ -23,10 +23,8 @@
         }
         #show-details {
             background-color: #fff;
-            <!-- border: 1px solid #ddd; -->
             border-radius: 5px;
             padding: 20px;
-            <!-- box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); -->
             margin-bottom: 10px;
             display: flex; /* Added flex layout */
             flex-direction: column; /* Stack details and button */
@@ -82,19 +80,6 @@
             border-radius: 4px;
             border: 1px solid #ccc;
         }
-        <!-- .button-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        } -->
         #save-changes-button {
             background-color: #28a745; /* Green save button */
             color: white;
@@ -104,13 +89,6 @@
         #save-changes-button:hover {
             background-color: #1e7e34;
         }
-        <!-- #back-to-shows-button {
-            background-color: #007bff; /* Blue back button */
-            color: white;
-        }
-        #back-to-shows-button:hover {
-            background-color: #0056b3;
-        } -->
         #potential-numbers-section {
             margin-top: 10px;
             padding: 15px;
@@ -362,25 +340,25 @@
             breedFilterDropdown.addEventListener('change', handleBreedFilterChange);
         }
 
-    async function handleGroupFilterChange(event) {
-        const selectedGroup = event.target.value;
-        const filteredBreedsByGroup = selectedGroup
-            ? allBreeds.filter(breed => breed.Group === selectedGroup)
-            : allBreeds;
-        populateBreedFilter(filteredBreedsByGroup);
-        await calculatePotentialNumbers('', selectedGroup); // Recalculate numbers based on group
-    }
-
-    async function handleBreedFilterChange(event) {
-        const selectedBreed = event.target.value;
-        const selectedGroup = groupFilterDropdown.value;
-        await calculatePotentialNumbers(selectedBreed, selectedGroup); // Recalculate numbers based on breed and current group
-    }
+        async function handleGroupFilterChange(event) {
+            const selectedGroup = event.target.value;
+            const filteredBreedsByGroup = selectedGroup
+                ? allBreeds.filter(breed => breed.Group === selectedGroup)
+                : allBreeds;
+            populateBreedFilter(filteredBreedsByGroup);
+            await calculatePotentialNumbers('', selectedGroup); // Recalculate numbers based on group
+        }
+    
+        async function handleBreedFilterChange(event) {
+            const selectedBreed = event.target.value;
+            const selectedGroup = groupFilterDropdown.value;
+            await calculatePotentialNumbers(selectedBreed, selectedGroup); // Recalculate numbers based on breed and current group
+        }
         
         async function fetchShowDetails() {
             const urlParams = new URLSearchParams(window.location.search);
             const currentShowId = urlParams.get('id');
-
+    
             if (!currentShowId) {
                 loadingMessageElement.style.display = 'none';
                 errorMessageElement.textContent = 'Error: No show ID provided.';
@@ -390,7 +368,7 @@
 
             try {
                 const showDoc = await showsCollection.doc(currentShowId).get();
-
+    
                 if (showDoc.exists) {
                     const showData = showDoc.data();
                     showNameElement.textContent = showData.ShowName || 'N/A';
@@ -398,10 +376,10 @@
                     showCityElement.textContent = showData.ShowCity || 'N/A';
                     showStateElement.textContent = showData.ShowState || 'N/A';
                     closeDateElement.textContent = formatDate(showData.CloseDate) || 'N/A';
-
+    
                     loadingMessageElement.style.display = 'none';
                     showDetailsElement.style.display = 'block';
-
+    
                     fetchDogsAndEntries(); // Fetch dogs and their show entries
                 } else {
                     loadingMessageElement.style.display = 'none';
@@ -409,7 +387,7 @@
                     errorMessageElement.style.display = 'block';
                     loadingDogsMessageElement.style.display = 'none'; // Hide dog loading message as well
                 }
-
+    
             } catch (error) {
                 console.error("Error fetching show details:", error);
                 loadingMessageElement.style.display = 'none';
@@ -420,38 +398,38 @@
         }
 
         async function fetchDogsAndEntries() {
-            try {
-                let dogsQuery = dogsCollection.where('Retired', '!=', true);
-                if (currentUserID) {
-                    dogsQuery = dogsQuery.where('OwnerID', '==', currentUserID);
-                }
-
-                const dogsSnapshot = await dogsQuery.get();
-                allDogsData = dogsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-                // Fetch existing show entries for these dogs and the current show
-                const entriesSnapshot = await showEntriesCollection
-                    .where('DogID', 'in', allDogsData.map(dog => dog.id))
-                    .where('ShowID', '==', currentShowId)
-                    .get();
-
-                existingShowEntries = {};
-                entriesSnapshot.forEach(doc => {
-                    existingShowEntries[doc.data().DogID] = doc.data().InterestLevel;
-                });
-
-                displayDogList();
+            try {
+                let dogsQuery = dogsCollection.where('Retired', '!=', true);
+                if (currentUserID) {
+                    dogsQuery = dogsQuery.where('OwnerID', '==', currentUserID);
+                }
+    
+                const dogsSnapshot = await dogsQuery.get();
+                allDogsData = dogsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+                // Fetch existing show entries for these dogs and the current show
+                const entriesSnapshot = await showEntriesCollection
+                    .where('DogID', 'in', allDogsData.map(dog => dog.id))
+                    .where('ShowID', '==', currentShowId)
+                    .get();
+    
+                existingShowEntries = {};
+                entriesSnapshot.forEach(doc => {
+                    existingShowEntries[doc.data().DogID] = doc.data().InterestLevel;
+                });
+    
+                displayDogList();
                 loadingDogsMessageElement.style.display = 'none';
                 await calculatePotentialNumbers('', ''); // Initial calculation with no filter
-
-            } catch (error) {
-                console.error("Error fetching dogs and entries:", error);
-                loadingDogsMessageElement.style.display = 'none';
-                errorDogsMessageElement.textContent = `Failed to load your dogs and entries: ${error.message}`;
-                errorDogsMessageElement.style.display = 'block';
-            }
-        }
-
+    
+            } catch (error) {
+                console.error("Error fetching dogs and entries:", error);
+                loadingDogsMessageElement.style.display = 'none';
+                errorDogsMessageElement.textContent = `Failed to load your dogs and entries: ${error.message}`;
+                errorDogsMessageElement.style.display = 'block';
+            }
+        }
+    
         async function fetchBreeds() {
             try {
                 const breedsSnapshot = await breedsCollection.orderBy('Breed').get();
@@ -483,118 +461,118 @@
         }
             
         async function calculatePotentialNumbers(filterBreed = '', filterGroup = '') {
-        let interestedDogClass = 0;
-        let interestedBitchClass = 0;
-        let interestedDogSpecial = 0;
-        let interestedBitchSpecial = 0;
-        let goingDogClass = 0;
-        let goingBitchClass = 0;
-        let goingDogSpecial = 0;
-        let goingBitchSpecial = 0;
-        let enteredDogClass = 0;
-        let enteredBitchClass = 0;
-        let enteredDogSpecial = 0;
-        let enteredBitchSpecial = 0;
-
-        try {
-            let dogsQuery = db.collection('Dog');
-            if (filterBreed) {
-                dogsQuery = dogsQuery.where('Breed', '==', filterBreed);
-            }
-            if (filterGroup) {
-                dogsQuery = dogsQuery.where('Group', '==', filterGroup);
-            }
-            const dogsSnapshot = await dogsQuery.get();
-
-            for (const dogDoc of dogsSnapshot.docs) {
-                const dogData = dogDoc.data();
-                const dogId = dogDoc.id;
-                const sex = dogData.Sex;
-                const champion = dogData.Champion === true || dogData.Champion === 'true' || dogData.Champion === 'True' || dogData.Champion === 1; // Handle boolean, string, and number
-
-                const entrySnapshot = await db.collection('ShowEntries')
-                    .where('DogID', '==', dogId)
-                    .where('ShowID', '==', currentShowId)
-                    .get();
-
-                entrySnapshot.forEach(entryDoc => {
-                    const entryData = entryDoc.data();
-                    const interestLevel = entryData.InterestLevel;
-
-                    if (interestLevel === 1) { // Interested
-                        if (sex === 'Male') {
-                            if (!champion) {
-                                interestedDogClass++;
-                            } else {
-                                interestedDogSpecial++;
+            let interestedDogClass = 0;
+            let interestedBitchClass = 0;
+            let interestedDogSpecial = 0;
+            let interestedBitchSpecial = 0;
+            let goingDogClass = 0;
+            let goingBitchClass = 0;
+            let goingDogSpecial = 0;
+            let goingBitchSpecial = 0;
+            let enteredDogClass = 0;
+            let enteredBitchClass = 0;
+            let enteredDogSpecial = 0;
+            let enteredBitchSpecial = 0;
+    
+            try {
+                let dogsQuery = db.collection('Dog');
+                if (filterBreed) {
+                    dogsQuery = dogsQuery.where('Breed', '==', filterBreed);
+                }
+                if (filterGroup) {
+                    dogsQuery = dogsQuery.where('Group', '==', filterGroup);
+                }
+                const dogsSnapshot = await dogsQuery.get();
+    
+                for (const dogDoc of dogsSnapshot.docs) {
+                    const dogData = dogDoc.data();
+                    const dogId = dogDoc.id;
+                    const sex = dogData.Sex;
+                    const champion = dogData.Champion === true || dogData.Champion === 'true' || dogData.Champion === 'True' || dogData.Champion === 1; // Handle boolean, string, and number
+    
+                    const entrySnapshot = await db.collection('ShowEntries')
+                        .where('DogID', '==', dogId)
+                        .where('ShowID', '==', currentShowId)
+                        .get();
+    
+                    entrySnapshot.forEach(entryDoc => {
+                        const entryData = entryDoc.data();
+                        const interestLevel = entryData.InterestLevel;
+    
+                        if (interestLevel === 1) { // Interested
+                            if (sex === 'Male') {
+                                if (!champion) {
+                                    interestedDogClass++;
+                                } else {
+                                    interestedDogSpecial++;
+                                }
+                            } else if (sex === 'Female') {
+                                if (!champion) {
+                                    interestedBitchClass++;
+                                } else {
+                                    interestedBitchSpecial++;
+                                }
                             }
-                        } else if (sex === 'Female') {
-                            if (!champion) {
-                                interestedBitchClass++;
-                            } else {
-                                interestedBitchSpecial++;
+                        } else if (interestLevel === 2) { // Going
+                            if (sex === 'Male') {
+                                if (!champion) {
+                                    goingDogClass++;
+                                } else {
+                                    goingDogSpecial++;
+                                }
+                            } else if (sex === 'Female') {
+                                if (!champion) {
+                                    goingBitchClass++;
+                                } else {
+                                    goingBitchSpecial++;
+                                }
+                            }
+                        } else if (interestLevel === 3) { // Entered
+                            if (sex === 'Male') {
+                                if (!champion) {
+                                    enteredDogClass++;
+                                } else {
+                                    enteredDogSpecial++;
+                                }
+                            } else if (sex === 'Female') {
+                                if (!champion) {
+                                    enteredBitchClass++;
+                                } else {
+                                    enteredBitchSpecial++;
+                                }
                             }
                         }
-                    } else if (interestLevel === 2) { // Going
-                        if (sex === 'Male') {
-                            if (!champion) {
-                                goingDogClass++;
-                            } else {
-                                goingDogSpecial++;
-                            }
-                        } else if (sex === 'Female') {
-                            if (!champion) {
-                                goingBitchClass++;
-                            } else {
-                                goingBitchSpecial++;
-                            }
-                        }
-                    } else if (interestLevel === 3) { // Entered
-                        if (sex === 'Male') {
-                            if (!champion) {
-                                enteredDogClass++;
-                            } else {
-                                enteredDogSpecial++;
-                            }
-                        } else if (sex === 'Female') {
-                            if (!champion) {
-                                enteredBitchClass++;
-                            } else {
-                                enteredBitchSpecial++;
-                            }
-                        }
-                    }
-                });
+                    });
+                }
+    
+                // Update the table in the HTML
+                interestedDogClassCell.textContent = interestedDogClass;
+                interestedBitchClassCell.textContent = interestedBitchClass;
+                interestedDogSpecialCell.textContent = interestedDogSpecial;
+                interestedBitchSpecialCell.textContent = interestedBitchSpecial;
+    
+                goingDogClassCell.textContent = goingDogClass;
+                goingBitchClassCell.textContent = goingBitchClass;
+                goingDogSpecialCell.textContent = goingDogSpecial;
+                goingBitchSpecialCell.textContent = goingBitchSpecial;
+    
+                enteredDogClassCell.textContent = enteredDogClass;
+                enteredBitchClassCell.textContent = enteredBitchClass;
+                enteredDogSpecialCell.textContent = enteredDogSpecial;
+                enteredBitchSpecialCell.textContent = enteredBitchSpecial;
+    
+                totalDogClassCell.textContent = interestedDogClass + goingDogClass + enteredDogClass;
+                totalBitchClassCell.textContent = interestedBitchClass + goingBitchClass + enteredBitchClass;
+                totalDogSpecialCell.textContent = interestedDogSpecial + goingDogSpecial + enteredDogSpecial;
+                totalBitchSpecialCell.textContent = interestedBitchSpecial + goingBitchSpecial + enteredBitchSpecial;
+    
+            } catch (error) {
+                console.error("Error calculating potential numbers:", error);
+                errorPotentialNumbersElement.textContent = `Failed to calculate potential numbers: ${error.message}`;
+                errorPotentialNumbersElement.style.display = 'block';
+                loadingPotentialNumbersElement.style.display = 'none';
             }
-
-            // Update the table in the HTML
-            interestedDogClassCell.textContent = interestedDogClass;
-            interestedBitchClassCell.textContent = interestedBitchClass;
-            interestedDogSpecialCell.textContent = interestedDogSpecial;
-            interestedBitchSpecialCell.textContent = interestedBitchSpecial;
-
-            goingDogClassCell.textContent = goingDogClass;
-            goingBitchClassCell.textContent = goingBitchClass;
-            goingDogSpecialCell.textContent = goingDogSpecial;
-            goingBitchSpecialCell.textContent = goingBitchSpecial;
-
-            enteredDogClassCell.textContent = enteredDogClass;
-            enteredBitchClassCell.textContent = enteredBitchClass;
-            enteredDogSpecialCell.textContent = enteredDogSpecial;
-            enteredBitchSpecialCell.textContent = enteredBitchSpecial;
-
-            totalDogClassCell.textContent = interestedDogClass + goingDogClass + enteredDogClass;
-            totalBitchClassCell.textContent = interestedBitchClass + goingBitchClass + enteredBitchClass;
-            totalDogSpecialCell.textContent = interestedDogSpecial + goingDogSpecial + enteredDogSpecial;
-            totalBitchSpecialCell.textContent = interestedBitchSpecial + goingBitchSpecial + enteredBitchSpecial;
-
-        } catch (error) {
-            console.error("Error calculating potential numbers:", error);
-            errorPotentialNumbersElement.textContent = `Failed to calculate potential numbers: ${error.message}`;
-            errorPotentialNumbersElement.style.display = 'block';
-            loadingPotentialNumbersElement.style.display = 'none';
         }
-    }
 
         function displayDogList() {
             dogsInShowListElement.innerHTML = '';
