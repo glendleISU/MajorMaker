@@ -110,16 +110,7 @@
         const errorMessageDiv = document.getElementById('error-message');
         const createProfileForm = document.getElementById('create-profile-form');
         const newProfileErrorMessageDiv = document.getElementById('new-profile-error-message');
-        const viewDogsButton = document.getElementById('view-dogs-button'); // Get the new button
-
-        fetch('navigation.html')
-        .then(response => response.text())
-        .then(data => {
-            document.querySelector('.page-container').insertAdjacentHTML('afterbegin', data);
-            setupNavigation(); // this is from navigation.js
-        });
-        src="navigation.js"
-        
+        const viewDogsButton = document.getElementById('view-dogs-button'); // Get the new button      
         
         document.addEventListener('DOMContentLoaded', () => {
             auth.onAuthStateChanged(user => {
