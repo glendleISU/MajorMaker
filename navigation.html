@@ -7,7 +7,7 @@
         <img id="logo" src="MMLogo.png">
       </div>
     </div>
-    
+
     <div class="nav-center">
       <div class="left-button">
         <button onclick="window.location.href='index.html'">Home</button>
@@ -30,17 +30,18 @@
             <a href="#" id="logout-button">Log out</a>
           </div>
         </div>
+      </div>
     </div>
-  </div>
 
     <div class="nav-right">
     </div>
   </div>
 
-<script>
+  <script>
     document.addEventListener('DOMContentLoaded', () => {
       const logoutButton = document.getElementById('logout-button');
       if (logoutButton) {
+        console.log('Log out button found in navigation.html'); // Added log
         logoutButton.addEventListener('click', (event) => {
           event.preventDefault();
           console.log('Logout button clicked - attempting sign out...');
@@ -51,9 +52,10 @@
             console.error('Error signing out:', error);
           });
         });
+        console.log('Log out button event listener attached.'); // Added log
       } else {
         console.warn('Log out button not found in navigation.html');
       }
     });
   </script>
-</html>  
+</html>
