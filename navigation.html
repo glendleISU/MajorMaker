@@ -27,7 +27,7 @@
           <div class="dropdown-content">
             <a href="profile.html">Profile</a>
             <a href="dogs.html">Dogs</a>
-            <a>Log out</a>
+            <a href="#" id="logout-button">Log out</a>
           </div>
         </div>
     </div>
@@ -36,3 +36,25 @@
     <div class="nav-right">
     </div>
   </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const logoutButton = document.getElementById('logout-button');
+      if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+          firebase.auth().signOut().then(() => {
+            // Sign-out successful.
+            console.log('User signed out');
+            window.location.href = 'index.html'; // Redirect to your index page
+          }).catch((error) => {
+            // An error happened.
+            console.error('Error signing out:', error);
+            // Optionally display an error message to the user
+          });
+        });
+      } else {
+        console.warn('Log out button not found in navigation.html');
+      }
+    });
+  </script>
+</html>  
