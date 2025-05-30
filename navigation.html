@@ -44,7 +44,8 @@
         console.log('Log out button found in navigation.html');
         logoutButton.addEventListener('click', (event) => {
           event.preventDefault();
-          console.log('*** Click event fired on Log out button ***'); // Added log
+          alert('Log out link clicked!'); // Temporary alert
+          console.log('*** Click event fired on Log out button ***');
           console.log('Attempting sign out...');
           firebase.auth().signOut().then(() => {
             console.log('Sign out successful!');
