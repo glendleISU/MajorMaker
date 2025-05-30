@@ -452,7 +452,7 @@
             }
         }
 
-        <!-- async function fetchBreeds() {
+        async function fetchBreeds() {
             try {
                 const breedsSnapshot = await breedsCollection.orderBy('Breed').get();
                 allBreeds = breedsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -480,7 +480,7 @@
             await calculatePotentialNumbers(selectedBreed);
             loadingPotentialNumbersElement.style.display = 'none';
             potentialNumbersTable.style.display = 'table';
-        } -->
+        }
             
         async function calculatePotentialNumbers(filterBreed = '', filterGroup = '') {
         let interestedDogClass = 0;
